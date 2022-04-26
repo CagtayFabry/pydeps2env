@@ -1,0 +1,47 @@
+name: 'pydeps2env'
+description: 'create conda environment file from python project dependencies'
+inputs:
+  file:
+    description: >-
+      Specify the location of the 'setup.cfg' file to parse. (defaults to 'setup.cfg')
+    required: true
+    default: 'setup.cfg'
+  output:
+    description: >-
+      Specify the location and name of the conda environment file to generate. (defaults to 'environment.yml')
+    required: true
+    default: 'environment.yml'
+  channels:
+    description: >-
+      List the conda channels to include in the environment file. (defaults to 'defaults')
+      Separate a list of multiple channels by spaces (e.g. 'conda-forge defaults').
+    required: true
+    default: 'defaults'
+  extras:
+    description: >-
+      Specify one or more optional [extras_require] sections to add to the environment
+      (e.g. 'test' to include package that you would normally install with 'pip install pkg[test]')
+    required: false
+  setup_requires:
+    description: >-
+      if set to 'include' the dependencies listed under [options]:setup_requires will be added to the environment
+      (default is 'omit' so no setup dependencies will be installed)
+    required: false
+    default: 'omit'
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+    - name: create environment file
+      run: >
+        python create_conda_env_file.py ${{ inputs.file }} ${{ inputs.output }}
+        --channels ${{ inputs.channels }}
+        --extras ${{ inputs.extras }}
+        --setup_requires ${{ inputs.setup_requires }}
+      shell: bash
+    - name: show environment file
+      run: cat ${{ inputs.output }}
+      shell: bash
