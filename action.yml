@@ -31,6 +31,7 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/checkout@v3
     - name: create environment file
       run: >
         python3 ${{ github.action_path }}/create_conda_env_file.py ${{ inputs.file }} ${{ inputs.output }}
