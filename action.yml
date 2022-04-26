@@ -33,6 +33,7 @@ runs:
   steps:
     - name: debug
       run: ls
+      shell: bash
     - name: create environment file
       run: >
         python create_conda_env_file.py ${{ inputs.file }} ${{ inputs.output }}
