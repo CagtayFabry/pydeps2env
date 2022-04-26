@@ -31,6 +31,8 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: debug
+      run: ls
     - name: create environment file
       run: >
         python create_conda_env_file.py ${{ inputs.file }} ${{ inputs.output }}
