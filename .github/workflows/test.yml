@@ -10,7 +10,8 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v3
-      - uses: CagtayFabry/pydeps2env@main
+      - name: run local action code
+        uses: ./
         with:
           file: './test/setup.cfg'
           output: 'environment_test.yml'
