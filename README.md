@@ -45,26 +45,26 @@ To customize the output the input options are available to the action:
 
 ### file
 
-Specify the location of the 'setup.cfg' file to parse. (defaults to 'setup.cfg')
+Specify the location of the `'setup.cfg'` file to parse. (defaults to `'setup.cfg'`)
 
 ### output:
 
-Specify the location and name of the conda environment file to generate. (defaults to 'environment.yml')
+Specify the location and name of the conda environment file to generate. (defaults to `'environment.yml'`)
 
 ### channels:
 
-List the conda channels to include in the environment file. (defaults to 'defaults')
-Separate a list of multiple channels by spaces (e.g. 'conda-forge defaults').
+List the conda channels to include in the environment file. (defaults to `'defaults'`)
+Separate a list of multiple channels by spaces (e.g. `'conda-forge defaults'`).
 
 ### extras:
 
-Specify one or more optional [extras_require] sections to add to the environment (e.g. 'test' to include package that
-you would normally install with 'pip install pkg[test]')
+Specify one or more optional `[extras_require]` sections to add to the environment (e.g. `'test'` to include package that
+you would normally install with `pip install pkg[test]`)
 
 ### setup_requires:
 
-if set to 'include' the dependencies listed under [options]:setup_requires will be added to the environment (default
-is 'omit' so no setup dependencies will be installed)
+if set to `'include'` the dependencies listed under `[options]:setup_requires` will be added to the environment (default
+is `'omit'` so no setup dependencies will be installed)
 
 ## example
 
