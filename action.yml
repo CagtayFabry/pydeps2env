@@ -33,6 +33,7 @@ runs:
   steps:
     - name: create environment file
       run: >
+        pip install toml
         python3 $GITHUB_ACTION_PATH/create_conda_env_file.py ${{ inputs.file }} ${{ inputs.output }}
         --channels ${{ inputs.channels }}
         --extras ${{ inputs.extras }}
