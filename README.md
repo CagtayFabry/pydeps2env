@@ -1,7 +1,7 @@
 # pydeps2env
 
-An easy way to manage create conda environemnt files from you python project dependencies.  
-Creates a conda `environment.yml` file from python package dependencies listed in a `setup.cfg` file.
+An easy way to manage create conda environment files from you python project dependencies.  
+Creates a conda `environment.yml` file from python package dependencies listed in a `setup.cfg` or `pyproject.toml` file.
 
 ## basic usage
 
@@ -45,7 +45,7 @@ To customize the output the input options are available to the action:
 
 ### file
 
-Specify the location of the `'setup.cfg'` file to parse. (defaults to `'setup.cfg'`)
+Specify the location of the `'setup.cfg'` or `'pyproject.toml` file to parse. (defaults to `'setup.cfg'`)
 
 ### output:
 
@@ -72,7 +72,7 @@ is `'omit'` so no setup dependencies will be installed)
 steps:
   - uses: CagtayFabry/pydeps2env@main
     with:
-      file: './test/setup.cfg'
+      file: './test/setup.cfg' # or ./test/pyproject.toml
       output: 'environment_test.yml'
       channels: 'conda-forge defaults'
       extras: 'test'
