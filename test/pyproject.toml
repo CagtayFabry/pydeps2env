@@ -1,0 +1,26 @@
+[project]
+name = "test"
+author = "Cagtay Fabry <cagtay.fabry@bam.de>"
+author_email = "cagtay.fabry@bam.de"
+
+requires-python = ">=3.8,<3.10"
+
+dependencies = [
+    "numpy >=1.20",
+    "pandas >=1.0",
+]
+
+[project.urls]
+home_page = "https://github.com/CagtayFabry/pydeps2env"
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+# Build system config, pip creates a temporary env with "requires" pkgs.
+[build-system]
+requires = [
+  "wheel",
+  "setuptools >= 40.9.0",
+  "setuptools_scm",
+]
+build-backend = "setuptools.build_meta"
