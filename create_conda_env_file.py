@@ -3,6 +3,7 @@
 import argparse
 import configparser
 from collections import defaultdict
+from pathlib import Path
 
 import tomli as tomllib
 
@@ -15,6 +16,8 @@ parser.add_argument("--extras", type=str, nargs="*", default=[])
 parser.add_argument("--setup_requires", type=str, default="omit")
 args = parser.parse_args()
 
+if not Path(args.setup).is_file():
+    raise FileNotFoundError(f"Could not find file {args.setup}")
 
 class MetadataType:
     SETUP_CFG = "setup.cfg"
