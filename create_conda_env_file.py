@@ -4,7 +4,7 @@ import argparse
 import configparser
 from collections import defaultdict
 
-import toml
+import tomli as tomllib
 
 parser = argparse.ArgumentParser()
 parser.add_argument("setup", type=str, default="setup.cfg",
@@ -41,8 +41,8 @@ if MetadataType.SETUP_CFG in args.setup:
                                                                e)
 
 elif MetadataType.PYPROJECT_TOML in args.setup:
-    with open(args.setup) as fh:
-        cp = defaultdict(dict, toml.load(fh))
+    with open(args.setup, "rb") as fh:
+        cp = defaultdict(dict, tomllib.load(fh))
 
     env["dependencies"] = ["python" + cp["project"].get("requires-python")]
 
