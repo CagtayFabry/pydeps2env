@@ -3,17 +3,20 @@
 import argparse
 import configparser
 from collections import defaultdict
+from pathlib import Path
 
-import toml
+import tomli as tomllib
 
 parser = argparse.ArgumentParser()
-parser.add_argument("setup", type=str, default="setup.cfg",
-                    help="or pyproject.toml")
+parser.add_argument("setup", type=str, default="setup.cfg", help="or pyproject.toml")
 parser.add_argument("env", type=str, default="environment.yml")
 parser.add_argument("--channels", type=str, nargs="*", default=["defaults"])
 parser.add_argument("--extras", type=str, nargs="*", default=[])
 parser.add_argument("--setup_requires", type=str, default="omit")
 args = parser.parse_args()
+
+if not Path(args.setup).is_file():
+    raise FileNotFoundError(f"Could not find file {args.setup}")
 
 
 class MetadataType:
@@ -32,22 +35,27 @@ if MetadataType.SETUP_CFG in args.setup:
 
     env["dependencies"] = ["python" + cp.get("options", "python_requires")]
     if args.setup_requires == "include":
-        env["dependencies"] = env["dependencies"] + cp.getlist("options",
-                                                               "setup_requires")
-    env["dependencies"] = env["dependencies"] + cp.getlist("options",
-                                                           "install_requires")
+        env["dependencies"] = env["dependencies"] + cp.getlist(
+            "options", "setup_requires"
+        )
+    env["dependencies"] = env["dependencies"] + cp.getlist(
+        "options", "install_requires"
+    )
     for e in args.extras:
-        env["dependencies"] = env["dependencies"] + cp.getlist("options.extras_require",
-                                                               e)
+        env["dependencies"] = env["dependencies"] + cp.getlist(
+            "options.extras_require", e
+        )
 
 elif MetadataType.PYPROJECT_TOML in args.setup:
-    with open(args.setup) as fh:
-        cp = defaultdict(dict, toml.load(fh))
+    with open(args.setup, "rb") as fh:
+        cp = defaultdict(dict, tomllib.load(fh))
 
     env["dependencies"] = ["python" + cp["project"].get("requires-python")]
 
     if args.setup_requires == "include":
-        env["dependencies"] = env["dependencies"] + cp.get("build-system").get("requires")
+        env["dependencies"] = env["dependencies"] + cp.get("build-system").get(
+            "requires"
+        )
 
     env["dependencies"] = env["dependencies"] + cp.get("project").get("dependencies")
 
