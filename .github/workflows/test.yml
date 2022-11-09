@@ -1,5 +1,8 @@
 on: [push, pull_request, workflow_dispatch]
 
+defaults:
+  run:
+    shell: bash -l {0}
 jobs:
   demo_job:
     name: create test env
@@ -25,3 +28,6 @@ jobs:
           environment-file: ./environment_test.yml
           environment-name: demo
           cache-env: true
+      - name: list env
+        run: >-
+          micromamba -n demo list
