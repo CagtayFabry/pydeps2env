@@ -28,6 +28,11 @@ inputs:
       (default is 'omit' so no setup dependencies will be installed)
     required: false
     default: 'omit'
+  pip:
+    description: >-
+      List of packages to install via pip instead of conda.
+      The dependencies will be listet under the pip section in the environment file.
+    required: false
 runs:
   using: "composite"
   steps:
