@@ -81,6 +81,7 @@ steps:
       channels: 'conda-forge defaults'
       extras: 'test'
       setup_requires: 'include'
+      pip: 'bidict'
 ```
 
 ```cfg
@@ -92,6 +93,7 @@ setup_requires =
 install_requires =
     numpy >=1.20
     pandas >=1.0
+    bidict
 
 [options.extras_require]
 test =
@@ -109,4 +111,6 @@ dependencies:
   - numpy>=1.20
   - pandas>=1.0
   - pytest
+  - pip:
+    - bidict 
 ```

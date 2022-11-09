@@ -19,7 +19,7 @@ jobs:
           channels: 'conda-forge defaults'
           extras: 'test pip_only'
           setup_requires: 'include'
-          pip: 'tomli'
+          pip: 'bidict'
       - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-file: ./environment_test.yml
