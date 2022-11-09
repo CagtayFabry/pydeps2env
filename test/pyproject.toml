@@ -15,7 +15,7 @@ home_page = "https://github.com/CagtayFabry/pydeps2env"
 
 [project.optional-dependencies]
 test = ["pytest"]
-pip_only = ["datatable"]
+pip_only = ["tomli"]
 
 # Build system config, pip creates a temporary env with "requires" pkgs.
 [build-system]

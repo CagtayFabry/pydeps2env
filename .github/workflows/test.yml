@@ -19,8 +19,8 @@ jobs:
           channels: 'conda-forge defaults'
           extras: 'test pip_only'
           setup_requires: 'include'
-          pip: 'datatable'
-      - uses: mamba-org/provision-with-micromamba@main
+          pip: 'tomli'
+      - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-file: ./environment_test.yml
           environment-name: demo
