@@ -43,6 +43,7 @@ runs:
         --channels ${{ inputs.channels }}
         --extras ${{ inputs.extras }}
         --setup_requires ${{ inputs.setup_requires }}
+        --pip ${{ inputs.pip }}
       shell: bash
     - name: show environment file
       run: cat ${{ inputs.output }}
