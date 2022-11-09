@@ -15,6 +15,7 @@ home_page = "https://github.com/CagtayFabry/pydeps2env"
 
 [project.optional-dependencies]
 test = ["pytest"]
+pip_only = ["datatable"]
 
 # Build system config, pip creates a temporary env with "requires" pkgs.
 [build-system]

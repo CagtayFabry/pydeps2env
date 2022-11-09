@@ -63,8 +63,12 @@ you would normally install with `pip install pkg[test]`)
 
 ### setup_requires:
 
-if set to `'include'` the dependencies listed under `[options]:setup_requires` will be added to the environment (default
-is `'omit'` so no setup dependencies will be installed)
+If set to `'include'` the dependencies listed under `[options]:setup_requires` will be added to the environment (default
+is `'omit'` so no setup dependencies will be installed).
+
+### pip
+List of packages to install via `pip` instead of `conda`.
+The dependencies will be listet under the `pip:` section in the environment file.
 
 ## example
 
