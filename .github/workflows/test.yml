@@ -25,12 +25,3 @@ jobs:
           environment-file: ./environment_test.yml
           environment-name: demo
           cache-env: true
-      - name: list env
-        shell: bash -l {0}
-        run: >-
-          micromamba -n demo list
-      # Linux and macOS
-      - name: Run Python
-        shell: bash -l {0}
-        run: |
-          python -c "import bidict"
