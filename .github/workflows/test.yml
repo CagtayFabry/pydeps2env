@@ -1,8 +1,5 @@
 on: [push, pull_request, workflow_dispatch]
 
-defaults:
-  run:
-    shell: bash -l {0}
 jobs:
   demo_job:
     name: create test env
@@ -29,5 +26,11 @@ jobs:
           environment-name: demo
           cache-env: true
       - name: list env
+        shell: bash -l {0}
         run: >-
           micromamba -n demo list
+      # Linux and macOS
+      - name: Run Python
+        shell: bash -l {0}
+        run: |
+          python -c "import bidict"
