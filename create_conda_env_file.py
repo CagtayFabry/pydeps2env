@@ -13,6 +13,7 @@ parser.add_argument("env", type=str, default="environment.yml")
 parser.add_argument("--channels", type=str, nargs="*", default=["defaults"])
 parser.add_argument("--extras", type=str, nargs="*", default=[])
 parser.add_argument("--setup_requires", type=str, default="omit")
+parser.add_argument("--pip", type=str, nargs="*", default=[])
 args = parser.parse_args()
 
 if not Path(args.setup).is_file():
@@ -67,10 +68,18 @@ elif MetadataType.PYPROJECT_TOML in args.setup:
 # cleanup
 env["dependencies"] = [dep.replace(" ", "") for dep in env["dependencies"]]
 
+# pip installs
+pip = list(set(env["dependencies"]) & set(args.pip))
+env["dependencies"] = list(set(env["dependencies"]) - set(pip))
+
 output = "channels:"
 output += "\n  - ".join([""] + env["channels"])
 output += "\ndependencies:"
 output += "\n  - ".join([""] + env["dependencies"])
+
+if pip:
+    output += "\n  - pip:"
+    output += "\n    - ".join([""] + pip)
 
 with open(args.env, "w") as f:
     f.write(output)

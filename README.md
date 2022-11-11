@@ -63,8 +63,12 @@ you would normally install with `pip install pkg[test]`)
 
 ### setup_requires:
 
-if set to `'include'` the dependencies listed under `[options]:setup_requires` will be added to the environment (default
-is `'omit'` so no setup dependencies will be installed)
+If set to `'include'` the dependencies listed under `[options]:setup_requires` will be added to the environment (default
+is `'omit'` so no setup dependencies will be installed).
+
+### pip
+List of packages to install via `pip` instead of `conda`.
+The dependencies will be listet under the `pip:` section in the environment file.
 
 ## example
 
@@ -77,6 +81,7 @@ steps:
       channels: 'conda-forge defaults'
       extras: 'test'
       setup_requires: 'include'
+      pip: 'bidict'
 ```
 
 ```cfg
@@ -88,6 +93,7 @@ setup_requires =
 install_requires =
     numpy >=1.20
     pandas >=1.0
+    bidict
 
 [options.extras_require]
 test =
@@ -105,4 +111,6 @@ dependencies:
   - numpy>=1.20
   - pandas>=1.0
   - pytest
+  - pip:
+    - bidict 
 ```

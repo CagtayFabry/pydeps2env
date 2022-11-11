@@ -17,9 +17,10 @@ jobs:
           file: ${{ matrix.config_file }}
           output: 'environment_test.yml'
           channels: 'conda-forge defaults'
-          extras: 'test'
+          extras: 'test pip_only'
           setup_requires: 'include'
-      - uses: mamba-org/provision-with-micromamba@main
+          pip: 'bidict'
+      - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-file: ./environment_test.yml
           environment-name: demo
