@@ -72,6 +72,10 @@ env["dependencies"] = [dep.replace(" ", "") for dep in env["dependencies"]]
 pip = list(set(env["dependencies"]) & set(args.pip))
 env["dependencies"] = list(set(env["dependencies"]) - set(pip))
 
+# sort output
+env["dependencies"] = sorted(env["dependencies"])
+pip = sorted(pip)
+
 output = "channels:"
 output += "\n  - ".join([""] + env["channels"])
 output += "\ndependencies:"
