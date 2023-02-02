@@ -1,42 +1,63 @@
 # pydeps2env
 
 An easy way to create conda environment files from you python project dependencies.  
-Creates a conda `environment.yml` file from python package dependencies listed in a `setup.cfg` or `pyproject.toml` file.
+Creates a conda `environment.yml` file from python package dependencies listed in a `pyproject.toml` or `setup.cfg` file.
 
 ## basic usage
 
-By default, the action will parse a `setup.cfg` file in your root directory into `environment.yml`. Here is an example
+By default, the action will parse a `pyproject.toml` file in your root directory into `environment.yml`. Here is an example
 of a simple setup:
 
 ```yaml
 steps:
-  - uses: CagtayFabry/pydeps2env@v0.2.0
+  - uses: CagtayFabry/pydeps2env@v0.2.2
 ```
 
-```cfg
-[options]
-python_requires = >=3.8,<3.10
-setup_requires =
-    setuptools >=38.3.0
-    setuptools_scm
-install_requires =
-    numpy >=1.20
-    pandas >=1.0
-
-[options.extras_require]
-test =
-    pytest
+```toml
+[project]
+requires-python = ">=3.8,<3.10"
+dependencies = [
+    "numpy >=1.20",
+    "pandas >=1.0",
+    "IPython",
+    "boltons",
+]
+[project.optional-dependencies]
+test = ["pytest"]
+pip_only = ["bidict"]
+]
 ```
 
-The default parameters will output this `environment.yml`:
+The default parameters will output this sorted `environment.yml`:
 
 ```yaml
 channels:
   - defaults
 dependencies:
-  - python>=3.8
+  - boltons
+  - IPython
   - numpy>=1.20
   - pandas>=1.0
+  - python>=3.8,<3.10
+```
+
+A full output with options `--setup_requires include --extras test pip_only --pip bidict`
+
+```yaml
+channels:
+  - defaults
+dependencies:
+  - boltons
+  - IPython
+  - numpy>=1.20
+  - pandas>=1.0
+  - pytest
+  - python>=3.8,<3.10
+  - setuptools>=40.9.0
+  - setuptools_scm
+  - wheel
+  - pip:
+    - bidict
 ```
 
 ## configuration options
@@ -84,20 +105,19 @@ steps:
       pip: 'bidict'
 ```
 
-```cfg
-[options]
-python_requires = >=3.8,<3.10
-setup_requires =
-    setuptools >=38.3.0
-    setuptools_scm
-install_requires =
-    numpy >=1.20
-    pandas >=1.0
-    bidict
-
-[options.extras_require]
-test =
-    pytest
+```toml
+[project]
+requires-python = ">=3.8,<3.10"
+dependencies = [
+    "numpy >=1.20",
+    "pandas >=1.0",
+    "IPython",
+    "boltons",
+]
+[project.optional-dependencies]
+test = ["pytest"]
+pip_only = ["bidict"]
+]
 ```
 
 ```yaml
@@ -105,12 +125,15 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python>=3.8,<3.10
-  - setuptools>=38.3.0
-  - setuptools_scm
+  - boltons
+  - IPython
   - numpy>=1.20
   - pandas>=1.0
   - pytest
+  - python>=3.8,<3.10
+  - setuptools>=40.9.0
+  - setuptools_scm
+  - wheel
   - pip:
-    - bidict 
+    - bidict
 ```

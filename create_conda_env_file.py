@@ -73,8 +73,8 @@ pip = list(set(env["dependencies"]) & set(args.pip))
 env["dependencies"] = list(set(env["dependencies"]) - set(pip))
 
 # sort output
-env["dependencies"] = sorted(env["dependencies"])
-pip = sorted(pip)
+env["dependencies"] = sorted(env["dependencies"], key=str.casefold)
+pip = sorted(pip, key=str.casefold)
 
 output = "channels:"
 output += "\n  - ".join([""] + env["channels"])
