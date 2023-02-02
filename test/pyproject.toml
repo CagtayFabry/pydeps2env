@@ -14,7 +14,10 @@ dependencies = [
 home_page = "https://github.com/CagtayFabry/pydeps2env"
 
 [project.optional-dependencies]
-test = ["pytest"]
+test = [
+    "pytest",
+    "IPython",
+]
 pip_only = ["bidict"]
 
 # Build system config, pip creates a temporary env with "requires" pkgs.
