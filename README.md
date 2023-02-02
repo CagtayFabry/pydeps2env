@@ -10,7 +10,7 @@ of a simple setup:
 
 ```yaml
 steps:
-  - uses: CagtayFabry/pydeps2env@v0.2.0
+  - uses: CagtayFabry/pydeps2env@v0.2.2
 ```
 
 ```toml
