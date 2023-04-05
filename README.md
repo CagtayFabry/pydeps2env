@@ -25,7 +25,6 @@ dependencies = [
 [project.optional-dependencies]
 test = ["pytest"]
 pip_only = ["bidict"]
-]
 ```
 
 The default parameters will output this sorted `environment.yml`:
@@ -117,7 +116,6 @@ dependencies = [
 [project.optional-dependencies]
 test = ["pytest"]
 pip_only = ["bidict"]
-]
 ```
 
 ```yaml
