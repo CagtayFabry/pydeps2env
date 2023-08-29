@@ -20,8 +20,11 @@ jobs:
           extras: 'test pip_only'
           setup_requires: 'include'
           pip: 'bidict'
-      - uses: mamba-org/provision-with-micromamba@v15
+      - uses: mamba-org/setup-micromamba@v1.4.3
         with:
           environment-file: ./environment_test.yml
           environment-name: demo
-          cache-env: true
+          init-shell: >-
+            bash
+            powershell
+          cache-environment: true
