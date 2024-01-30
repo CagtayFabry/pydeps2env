@@ -11,7 +11,7 @@ def create_environment_file(
     pip: list[str],
     include_build_system: bool = False,
 ):
-    from pydeps2env import Environment
+    from pydeps2env.environment import Environment
 
     env = Environment(filename, pip_packages=pip, extras=extras, channels=channels)
 

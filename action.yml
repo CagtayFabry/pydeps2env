@@ -39,7 +39,7 @@ runs:
     - name: create environment file
       run: >
         pip3 install tomli &&
-        python3 $GITHUB_ACTION_PATH/pydeps2env/scripts/generate_environment.py ${{ inputs.file }} ${{ inputs.output }}
+        python3 $GITHUB_ACTION_PATH/generate_environment.py ${{ inputs.file }} ${{ inputs.output }}
         --channels ${{ inputs.channels }}
         --extras ${{ inputs.extras }}
         --setup_requires ${{ inputs.setup_requires }}
