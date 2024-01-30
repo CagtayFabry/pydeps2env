@@ -38,6 +38,7 @@ runs:
   steps:
     - name: pip installs
       run: pip3 install tomli setuptools-scm && python3 -m setuptools_scm
+      shell: bash
     - name: create environment file
       run: >
         python3 $GITHUB_ACTION_PATH/generate_environment.py ${{ inputs.file }} ${{ inputs.output }}
