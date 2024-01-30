@@ -11,8 +11,6 @@ jobs:
         config_file: ['./test/setup.cfg', './test/pyproject.toml']
     steps:
       - uses: actions/checkout@v3
-      - name: setup package
-        run: python -m setuptools_scm
       - name: run local action code
         uses: ./
         with:
