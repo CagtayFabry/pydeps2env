@@ -3,3 +3,5 @@
 from .environment import Environment
 
 __all__ = ["Environment"]
+
+from ._version import __version__
