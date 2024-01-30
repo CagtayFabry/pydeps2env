@@ -42,6 +42,7 @@ def combine_requirements(
 class Environment:
     filename: str | Path
     channels: list[str] = field(default_factory=lambda: ["conda-forge"])
+    extras: list[str] = field(default_factory=list)
     pip_packages: set[str] = field(default_factory=set)  # install via pip
     requirements: dict[str, Requirement] = field(default_factory=dict, init=False)
     build_system: dict[str, Requirement] = field(default_factory=dict, init=False)
@@ -62,6 +63,13 @@ class Environment:
 
         for dep in cp.get("build-system").get("requires"):
             add_requirement(dep, self.build_system)
+
+        for e in self.extras:
+            extra_deps = cp.get("project").get("optional-dependencies").get(e)
+            if not extra_deps:
+                continue
+            for dep in extra_deps:
+                add_requirement(dep, self.requirements)
 
     def _get_dependencies(self, include_build_system: bool = True):
         """Get the default conda environment entries."""
