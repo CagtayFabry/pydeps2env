@@ -10,7 +10,7 @@ of a simple setup:
 
 ```yaml
 steps:
-  - uses: CagtayFabry/pydeps2env@v0.2.2
+  - uses: CagtayFabry/pydeps2env@v0.3.0
 ```
 
 ```toml
@@ -27,17 +27,17 @@ test = ["pytest"]
 pip_only = ["bidict"]
 ```
 
-The default parameters will output this sorted `environment.yml`:
+The default parameters will output this sorted `environment.yml` (note that the `python` dependency will always be the first item on the list):
 
 ```yaml
 channels:
   - defaults
 dependencies:
+  - python>=3.8,<3.10
   - boltons
   - IPython
   - numpy>=1.20
   - pandas>=1.0
-  - python>=3.8,<3.10
 ```
 
 A full output with options `--setup_requires include --extras test pip_only --pip bidict`
@@ -46,12 +46,12 @@ A full output with options `--setup_requires include --extras test pip_only --pi
 channels:
   - defaults
 dependencies:
+  - python>=3.8,<3.10
   - boltons
   - IPython
   - numpy>=1.20
   - pandas>=1.0
   - pytest
-  - python>=3.8,<3.10
   - setuptools>=40.9.0
   - setuptools_scm
   - wheel
@@ -65,7 +65,7 @@ To customize the output the input options are available to the action:
 
 ### file
 
-Specify the location of the `'setup.cfg'` or `'pyproject.toml` file to parse. (defaults to `'setup.cfg'`)
+Specify the location of the `'setup.cfg'` or `'pyproject.toml'` file to parse. (defaults to `'pyproject.toml'`)
 
 ### output:
 
@@ -73,7 +73,7 @@ Specify the location and name of the conda environment file to generate. (defaul
 
 ### channels:
 
-List the conda channels to include in the environment file. (defaults to `'defaults'`)
+List the conda channels to include in the environment file. (defaults to `'conda-forge'`)
 Separate a list of multiple channels by spaces (e.g. `'conda-forge defaults'`).
 
 ### extras:
@@ -83,7 +83,7 @@ you would normally install with `pip install pkg[test]`)
 
 ### setup_requires:
 
-If set to `'include'` the dependencies listed under `[options]:setup_requires` will be added to the environment (default
+If set to `'include'` the dependencies listed under `[options:setup_requires]` will be added to the environment (default
 is `'omit'` so no setup dependencies will be installed).
 
 ### pip
@@ -123,12 +123,12 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - python>=3.8,<3.10
   - boltons
   - IPython
   - numpy>=1.20
   - pandas>=1.0
   - pytest
-  - python>=3.8,<3.10
   - setuptools>=40.9.0
   - setuptools_scm
   - wheel
