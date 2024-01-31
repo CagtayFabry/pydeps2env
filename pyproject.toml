@@ -29,6 +29,7 @@ dynamic = [
 ]
 dependencies = [
   "tomli",
+  "packaging",
   "pyyaml",
 ]
 [project.optional-dependencies]
