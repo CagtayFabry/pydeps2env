@@ -38,7 +38,7 @@ runs:
   steps:
     - name: create environment file
       run: >
-        pip3 install tomli &&
+        pip3 install tomli packaging &&
         python3 $GITHUB_ACTION_PATH/generate_environment.py ${{ inputs.file }} ${{ inputs.output }}
         --channels ${{ inputs.channels }}
         --extras ${{ inputs.extras }}
