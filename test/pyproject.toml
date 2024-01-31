@@ -20,9 +20,9 @@ test = [
   "pytest",
 ]
 [project.urls]
-home_page = "https://github.com/CagtayFabry/pydeps2env"
 author = "Cagtay Fabry <cagtay.fabry@bam.de>"
 author_email = "cagtay.fabry@bam.de"
+home_page = "https://github.com/CagtayFabry/pydeps2env"
 
 [build-system]
 build-backend = "setuptools.build_meta"

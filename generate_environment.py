@@ -27,10 +27,16 @@ def main():
         "setup", type=str, default="pyproject.toml", help="dependency file"
     )
     parser.add_argument("env", type=str, default="environment.yml", help="output file")
-    parser.add_argument("--channels", type=str, nargs="*", default=["defaults"])
-    parser.add_argument("--extras", type=str, nargs="*", default=[])
-    parser.add_argument("--setup_requires", type=str, default="omit")
-    parser.add_argument("--pip", type=str, nargs="*", default=[])
+    parser.add_argument("-c", "--channels", type=str, nargs="*", default=["defaults"])
+    parser.add_argument("-e", "--extras", type=str, nargs="*", default=[])
+    parser.add_argument(
+        "-b",
+        "--build_system",
+        "--setup_requires",
+        type=str,
+        choices=["omit", "include"],
+    )
+    parser.add_argument("-p", "--pip", type=str, nargs="*", default=[])
     args = parser.parse_args()
 
     if not Path(args.setup).is_file():
@@ -42,7 +48,7 @@ def main():
         channels=args.channels,
         extras=args.extras,
         pip=args.pip,
-        include_build_system=args.setup_requires,
+        include_build_system=args.build_system,
     )
 
 
