@@ -28,3 +28,17 @@ jobs:
           bash
           powershell
         cache-environment: true
+
+  test_script:
+    name: create test env
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        config_file: [./test/setup.cfg, ./test/pyproject.toml]
+    steps:
+    - uses: actions/checkout@v3
+    - name: pip install package
+      run: pip install .
+    - name: test cmd script
+      run: pydeps2env ${{ matrix.config_file }} output.yaml -c defaults --extras test -b include --pip pandas

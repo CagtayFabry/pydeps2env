@@ -43,7 +43,7 @@ test = [
 bug_tracker = "https://github.com/CagtayFabry/pydeps2env/-/issues"
 repository = "https://github.com/CagtayFabry/pydeps2env"
 [project.scripts]
-pydeps2env = "generate_environment:main"
+pydeps2env = "pydeps2env.generate_environment:main"
 
 [build-system]
 build-backend = "setuptools.build_meta"
