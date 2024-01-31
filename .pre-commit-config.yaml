@@ -2,10 +2,10 @@ repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.1.0
   hooks:
-    - id: trailing-whitespace
-      args: [--markdown-linebreak-ext=md]
-    - id: end-of-file-fixer
-    - id: check-yaml
+  - id: trailing-whitespace
+    args: [--markdown-linebreak-ext=md]
+  - id: end-of-file-fixer
+  - id: check-yaml
   # ----- Python formatting -----
 - repo: https://github.com/charliermarsh/ruff-pre-commit
   rev: v0.1.13
@@ -17,3 +17,17 @@ repos:
     - --fix
       # Run ruff formatter.
   - id: ruff-format
+  # ----- repo maintenance -----
+- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  rev: v2.12.0
+  hooks:
+  - id: pretty-format-yaml
+    args: [--autofix, --indent, '2']
+- repo: https://github.com/tox-dev/pyproject-fmt
+  rev: 1.6.0
+  hooks:
+  - id: pyproject-fmt
+- repo: https://github.com/abravalheri/validate-pyproject
+  rev: v0.15
+  hooks:
+  - id: validate-pyproject

@@ -3,7 +3,8 @@ name = "pydeps2env"
 description = "A python helper to generate conda environment files from project dependencies."
 readme = {file = "README.md", content-type="text/markdown"}
 keywords = [
-  "conda", "pyproject",
+  "conda",
+  "pyproject",
 ]
 license = {file = "LICENSE", name="BSD License"}
 authors = [
@@ -28,9 +29,9 @@ dynamic = [
   "version", # version gets derived from git by setuptools_scm.
 ]
 dependencies = [
-  "tomli",
   "packaging",
   "pyyaml",
+  "tomli",
 ]
 [project.optional-dependencies]
 test = [

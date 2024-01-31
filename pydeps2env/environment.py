@@ -77,11 +77,12 @@ class Environment:
             for dep in extra_deps:
                 add_requirement(dep, self.requirements)
 
-
     def load_config(self):
         """Load contents from a cfg file (assume setup.cfg layout)."""
         cp = configparser.ConfigParser(
-            converters={"list": lambda x: [i.strip() for i in x.split("\n") if i.strip()]}
+            converters={
+                "list": lambda x: [i.strip() for i in x.split("\n") if i.strip()]
+            }
         )
         cp.read(self.filename)
 

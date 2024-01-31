@@ -1,27 +1,33 @@
 [project]
 name = "test"
+requires-python = ">=3.8,<3.10"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+]
+dependencies = [
+  "boltons",
+  "IPython",
+  "numpy>=1.20",
+  "pandas>=1",
+]
+[project.optional-dependencies]
+pip_only = [
+  "bidict",
+]
+test = [
+  "pytest",
+]
+[project.urls]
+home_page = "https://github.com/CagtayFabry/pydeps2env"
 author = "Cagtay Fabry <cagtay.fabry@bam.de>"
 author_email = "cagtay.fabry@bam.de"
 
-requires-python = ">=3.8,<3.10"
-dependencies = [
-    "numpy >=1.20",
-    "pandas >=1.0",
-    "IPython",
-    "boltons",
-]
-[project.optional-dependencies]
-test = ["pytest"]
-pip_only = ["bidict"]
-
-[project.urls]
-home_page = "https://github.com/CagtayFabry/pydeps2env"
-
-# Build system config, pip creates a temporary env with "requires" pkgs.
 [build-system]
-requires = [
-  "wheel",
-  "setuptools >= 40.9.0",
-  "setuptools_scm",
-]
 build-backend = "setuptools.build_meta"
+requires = [
+  "setuptools>=40.9",
+  "setuptools_scm",
+  "wheel",
+]
