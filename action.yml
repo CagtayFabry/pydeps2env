@@ -1,22 +1,22 @@
-name: 'pydeps2env'
-description: 'create conda environment file from python project dependencies'
+name: pydeps2env
+description: create conda environment file from python project dependencies
 inputs:
   file:
     description: >-
       Specify the location of the 'setup.cfg' file to parse. (defaults to 'setup.cfg')
     required: true
-    default: 'setup.cfg'
+    default: setup.cfg
   output:
     description: >-
       Specify the location and name of the conda environment file to generate. (defaults to 'environment.yml')
     required: true
-    default: 'environment.yml'
+    default: environment.yml
   channels:
     description: >-
       List the conda channels to include in the environment file. (defaults to 'defaults')
       Separate a list of multiple channels by spaces (e.g. 'conda-forge defaults').
     required: true
-    default: 'defaults'
+    default: defaults
   extras:
     description: >-
       Specify one or more optional [extras_require] sections to add to the environment
@@ -27,24 +27,24 @@ inputs:
       if set to 'include' the dependencies listed under [options]:setup_requires will be added to the environment
       (default is 'omit' so no setup dependencies will be installed)
     required: false
-    default: 'omit'
+    default: omit
   pip:
     description: >-
       List of packages to install via pip instead of conda.
       The dependencies will be listet under the pip section in the environment file.
     required: false
 runs:
-  using: "composite"
+  using: composite
   steps:
-    - name: create environment file
-      run: >
-        pip3 install tomli &&
-        python3 $GITHUB_ACTION_PATH/create_conda_env_file.py ${{ inputs.file }} ${{ inputs.output }}
-        --channels ${{ inputs.channels }}
-        --extras ${{ inputs.extras }}
-        --setup_requires ${{ inputs.setup_requires }}
-        --pip ${{ inputs.pip }}
-      shell: bash
-    - name: show environment file
-      run: cat ${{ inputs.output }}
-      shell: bash
+  - name: create environment file
+    run: >
+      pip3 install tomli packaging pyyaml &&
+      python3 $GITHUB_ACTION_PATH/pydeps2env/generate_environment.py ${{ inputs.file }} ${{ inputs.output }}
+      --channels ${{ inputs.channels }}
+      --extras ${{ inputs.extras }}
+      --setup_requires ${{ inputs.setup_requires }}
+      --pip ${{ inputs.pip }}
+    shell: bash
+  - name: show environment file
+    run: cat ${{ inputs.output }}
+    shell: bash
