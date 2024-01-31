@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from packaging.requirements import Requirement
 from pathlib import Path
 from collections import defaultdict
+import configparser
 import tomli as tomllib
 import yaml
 import warnings
@@ -50,8 +51,13 @@ class Environment:
     def __post_init__(self):
         if Path(self.filename).suffix == ".toml":
             self.load_pyproject()
+        elif Path(self.filename).suffix == ".cfg":
+            self.load_config()
+        else:
+            raise ValueError(f"Unsupported input {self.filename}")
 
     def load_pyproject(self):
+        """Load contents from a toml file (assume pyproject.toml layout)."""
         with open(self.filename, "rb") as fh:
             cp = defaultdict(dict, tomllib.load(fh))
 
@@ -66,6 +72,30 @@ class Environment:
 
         for e in self.extras:
             extra_deps = cp.get("project").get("optional-dependencies").get(e)
+            if not extra_deps:
+                continue
+            for dep in extra_deps:
+                add_requirement(dep, self.requirements)
+
+
+    def load_config(self):
+        """Load contents from a cfg file (assume setup.cfg layout)."""
+        cp = configparser.ConfigParser(
+            converters={"list": lambda x: [i.strip() for i in x.split("\n") if i.strip()]}
+        )
+        cp.read(self.filename)
+
+        if python := cp.get("options", "python_requires"):
+            add_requirement("python" + python, self.requirements)
+
+        for dep in cp.getlist("options", "install_requires"):
+            add_requirement(dep, self.requirements)
+
+        for dep in cp.getlist("options", "setup_requires"):
+            add_requirement(dep, self.build_system)
+
+        for e in self.extras:
+            extra_deps = cp.getlist("options.extras_require", e)
             if not extra_deps:
                 continue
             for dep in extra_deps:
