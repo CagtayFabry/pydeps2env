@@ -8,10 +8,10 @@ classifiers = [
 ]
 dependencies = [
   "boltons",
+  "both>=1",
   "IPython",
   "numpy>=1.20",
   "pandas>=1",
-  "both>=1",
 ]
 [project.optional-dependencies]
 pip_only = [
