@@ -157,4 +157,3 @@ class Environment:
         self.build_system = combine_requirements(self.build_system, other.build_system)
         self.pip_packages = list(set(self.pip_packages) | set(other.pip_packages))
         self.pip_packages.sort(key=str.lower)
-

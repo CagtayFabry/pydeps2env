@@ -34,8 +34,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        config_file: [./test/setup.cfg, ./test/pyproject.toml]
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
@@ -44,4 +42,4 @@ jobs:
     - name: pip install package
       run: pip install .
     - name: test cmd script
-      run: pydeps2env ${{ matrix.config_file }} output.yaml -c defaults --extras test -b include --pip pandas
+      run: pydeps2env ./test/setup.cfg ./test/pyproject.toml -o output.yaml -c defaults --extras test -b include --pip pandas

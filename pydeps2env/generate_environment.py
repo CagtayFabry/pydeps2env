@@ -31,7 +31,9 @@ def main():
     parser.add_argument(
         "setup", type=str, nargs="*", default="pyproject.toml", help="dependency file"
     )
-    parser.add_argument("-o", "--output", type=str, default="environment.yml", help="output file")
+    parser.add_argument(
+        "-o", "--output", type=str, default="environment.yml", help="output file"
+    )
     parser.add_argument("-c", "--channels", type=str, nargs="*", default=["defaults"])
     parser.add_argument("-e", "--extras", type=str, nargs="*", default=[])
     parser.add_argument(
