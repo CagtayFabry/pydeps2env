@@ -150,3 +150,11 @@ class Environment:
                 )
             with open(p, "w") as outfile:
                 yaml.dump(conda_env, outfile, default_flow_style=False)
+
+    def combine(self, other: Environment):
+        """Merge other Environment requirements into this Environment."""
+        self.requirements = combine_requirements(self.requirements, other.requirements)
+        self.build_system = combine_requirements(self.build_system, other.build_system)
+        self.pip_packages = list(set(self.pip_packages) | set(other.pip_packages))
+        self.pip_packages.sort(key=str.lower)
+
