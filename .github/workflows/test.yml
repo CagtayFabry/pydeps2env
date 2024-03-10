@@ -8,13 +8,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        config_file: [./test/setup.cfg, ./test/pyproject.toml]
     steps:
     - uses: actions/checkout@v4
     - name: run local action code
       uses: ./
       with:
-        file: ${{ matrix.config_file }}
+        files: ./test/pyproject.toml ./test/setup.cfg
         output: environment_test.yml
         channels: conda-forge defaults
         extras: test pip_only

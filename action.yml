@@ -1,11 +1,11 @@
 name: pydeps2env
 description: create conda environment file from python project dependencies
 inputs:
-  file:
+  files:
     description: >-
-      Specify the location of the 'setup.cfg' file to parse. (defaults to 'setup.cfg')
+      Specify the location of the dependencies files to parse. (defaults to 'pyproject.toml')
     required: true
-    default: setup.cfg
+    default: pyproject.toml
   output:
     description: >-
       Specify the location and name of the conda environment file to generate. (defaults to 'environment.yml')
