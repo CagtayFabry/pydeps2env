@@ -13,14 +13,14 @@ dependencies = [
   "pandas>=1",
 ]
 [project.optional-dependencies]
+doc = [
+  "sphinx",
+]
 pip_only = [
   "bidict",
 ]
 test = [
   "pytest",
-]
-doc = [
-  "sphinx",
 ]
 [project.urls]
 author = "Cagtay Fabry <cagtay.fabry@bam.de>"

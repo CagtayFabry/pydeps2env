@@ -13,11 +13,12 @@ import warnings
 def split_extras(filename: str) -> tuple[str, set]:
     """Split extras requirements indicated in []."""
     if "[" in filename:
-            filename, extras = filename.split("[",1)
-            extras = set(extras.split("]",1)[0].split(","))
+        filename, extras = filename.split("[", 1)
+        extras = set(extras.split("]", 1)[0].split(","))
     else:
-            extras = {}
+        extras = {}
     return filename, extras
+
 
 def add_requirement(
     req: Requirement | str,

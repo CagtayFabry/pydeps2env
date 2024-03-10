@@ -3,14 +3,26 @@
 An easy way to create conda environment files from you python project dependencies.  
 Creates a conda `environment.yml` file from python package dependencies listed in a `pyproject.toml` or `setup.cfg` file.
 
-## basic usage
+The project contains
+- GitHub action
+- python package
+- command line script
+
+```mermaid
+flowchart LR
+    pyproject.toml --> pydeps2env
+    setup.cfg --> pydeps2env
+    pydeps2env --> environment.yaml
+```
+
+## basic usage (GitHub action)
 
 By default, the action will parse a `pyproject.toml` file in your root directory into `environment.yml`. Here is an example
 of a simple setup:
 
 ```yaml
 steps:
-  - uses: CagtayFabry/pydeps2env@v0.3.0
+  - uses: CagtayFabry/pydeps2env@v1.0.0
 ```
 
 ```toml
@@ -40,7 +52,7 @@ dependencies:
   - pandas>=1.0
 ```
 
-A full output with options `--setup_requires include --extras test pip_only --pip bidict`
+A full output with options `--build_system include --extras test pip_only --pip bidict`
 
 ```yaml
 channels:
@@ -63,9 +75,10 @@ dependencies:
 
 To customize the output the input options are available to the action:
 
-### file
+### files
 
-Specify the location of the `'setup.cfg'` or `'pyproject.toml'` file to parse. (defaults to `'pyproject.toml'`)
+Specify the location of the `'setup.cfg'` or `'pyproject.toml'` files to parse. (defaults to `'pyproject.toml'`)
+Multiple files can be listed. This will result in a combined environment file.
 
 ### output:
 
@@ -78,8 +91,9 @@ Separate a list of multiple channels by spaces (e.g. `'conda-forge defaults'`).
 
 ### extras:
 
-Specify one or more optional `[extras_require]` sections to add to the environment (e.g. `'test'` to include package that
-you would normally install with `pip install pkg[test]`)
+Specify one or more optional `[extras_require]` sections to add to all the environments (e.g. `'test'` to include package that
+you would normally install with `pip install pkg[test]`).
+Note that for individual packages, the [extra]` syntax is also possible.
 
 ### setup_requires:
 
@@ -94,9 +108,9 @@ The dependencies will be listet under the `pip:` section in the environment file
 
 ```yaml
 steps:
-  - uses: CagtayFabry/pydeps2env@main
+  - uses: CagtayFabry/pydeps2env@v1.0.0
     with:
-      file: './test/setup.cfg' # or ./test/pyproject.toml
+      files: ./test/pyproject.toml[doc] ./test/setup.cfg # comine both files, add [doc] only for pyproject.toml
       output: 'environment_test.yml'
       channels: 'conda-forge defaults'
       extras: 'test'
@@ -131,6 +145,7 @@ dependencies:
   - pytest
   - setuptools>=40.9.0
   - setuptools_scm
+  - sphinx
   - wheel
   - pip:
     - bidict
