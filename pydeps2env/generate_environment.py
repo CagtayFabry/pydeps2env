@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+try:
+    from pydeps2env.environment import Environment, split_extras
+except ModuleNotFoundError:  # try local file if not installed
+    from environment import Environment, split_extras
+
 
 def create_environment_file(
     filename: list[str],
@@ -11,14 +16,9 @@ def create_environment_file(
     pip: list[str],
     include_build_system: bool = False,
 ):
-    try:
-        from pydeps2env.environment import Environment
-    except ModuleNotFoundError:  # try local file if not installed
-        from environment import Environment
-
     env = Environment(filename[0], pip_packages=pip, extras=extras, channels=channels)
     for f in filename[1:]:
-        env.combine(Environment(f))
+        env.combine(Environment(f, pip_packages=pip, extras=extras, channels=channels))
 
     _include = include_build_system == "include"
     env.export(output_file, include_build_system=_include)
@@ -47,8 +47,9 @@ def main():
     args = parser.parse_args()
 
     for file in args.setup:
-        if not Path(file).is_file():
-            raise FileNotFoundError(f"Could not find file {args.setup}")
+        filename, _ = split_extras(file)
+        if not Path(filename).is_file():
+            raise FileNotFoundError(f"Could not find file {filename}")
 
     create_environment_file(
         filename=args.setup,

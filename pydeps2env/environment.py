@@ -10,6 +10,15 @@ import yaml
 import warnings
 
 
+def split_extras(filename: str) -> tuple[str, set]:
+    """Split extras requirements indicated in []."""
+    if "[" in filename:
+            filename, extras = filename.split("[",1)
+            extras = set(extras.split("]",1)[0].split(","))
+    else:
+            extras = {}
+    return filename, extras
+
 def add_requirement(
     req: Requirement | str,
     requirements: dict[str, Requirement],
@@ -53,9 +62,8 @@ class Environment:
     def __post_init__(self):
         self.extras = set(self.extras)
 
-        if isinstance(self.filename, str) and "[" in self.filename:
-            self.filename, extras = self.filename.split("[",1)
-            extras = extras.split("]",1)[0].split(",")
+        if isinstance(self.filename, str):
+            self.filename, extras = split_extras(self.filename)
             self.extras |= set(extras)
 
         if Path(self.filename).suffix == ".toml":
