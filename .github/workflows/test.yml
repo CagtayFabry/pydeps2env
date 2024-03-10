@@ -13,10 +13,10 @@ jobs:
     - name: run local action code
       uses: ./
       with:
-        files: ./test/pyproject.toml ./test/setup.cfg
+        files: ./test/pyproject.toml[doc] ./test/setup.cfg[pip_only]
         output: environment_test.yml
         channels: conda-forge defaults
-        extras: test pip_only
+        extras: test
         setup_requires: include
         pip: bidict
     - uses: mamba-org/setup-micromamba@v1.8.0
@@ -41,4 +41,4 @@ jobs:
     - name: pip install package
       run: pip install .
     - name: test cmd script
-      run: pydeps2env ./test/setup.cfg ./test/pyproject.toml -o output.yaml -c defaults --extras test -b include --pip pandas
+      run: pydeps2env ./test/setup.cfg ./test/pyproject.toml[doc] -o output.yaml -c defaults --extras test -b include --pip pandas

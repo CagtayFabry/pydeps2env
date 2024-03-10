@@ -19,6 +19,9 @@ pip_only = [
 test = [
   "pytest",
 ]
+doc = [
+  "sphinx",
+]
 [project.urls]
 author = "Cagtay Fabry <cagtay.fabry@bam.de>"
 author_email = "cagtay.fabry@bam.de"

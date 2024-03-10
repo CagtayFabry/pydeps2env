@@ -45,12 +45,19 @@ def combine_requirements(
 class Environment:
     filename: str | Path
     channels: list[str] = field(default_factory=lambda: ["conda-forge"])
-    extras: list[str] = field(default_factory=list)
+    extras: set[str] | list[str] = field(default_factory=set)
     pip_packages: set[str] = field(default_factory=set)  # install via pip
     requirements: dict[str, Requirement] = field(default_factory=dict, init=False)
     build_system: dict[str, Requirement] = field(default_factory=dict, init=False)
 
     def __post_init__(self):
+        self.extras = set(self.extras)
+
+        if isinstance(self.filename, str) and "[" in self.filename:
+            self.filename, extras = self.filename.split("[",1)
+            extras = extras.split("]",1)[0].split(",")
+            self.extras |= set(extras)
+
         if Path(self.filename).suffix == ".toml":
             self.load_pyproject()
         elif Path(self.filename).suffix == ".cfg":
