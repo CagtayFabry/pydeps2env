@@ -1,5 +1,7 @@
 name: pydeps2env
 description: create conda environment file from python project dependencies
+icon: code
+color: yellow
 inputs:
   files:
     description: >-
