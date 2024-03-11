@@ -98,9 +98,9 @@ Specify one or more optional `[extras_require]` sections to add to all the envir
 you would normally install with `pip install pkg[test]`).
 Note that for individual packages, the [extra]` syntax is also possible.
 
-### setup_requires:
+### build_system:
 
-If set to `'include'` the dependencies listed under `[options:setup_requires]` will be added to the environment (default
+If set to `'include'` the dependencies listed under `[build-system]` (or `[options:setup_requires]` in `setup.cfg`) will be added to the environment (default
 is `'omit'` so no setup dependencies will be installed).
 
 ### pip
@@ -117,7 +117,7 @@ steps:
       output: 'environment_test.yml'
       channels: 'conda-forge defaults'
       extras: 'test'
-      setup_requires: 'include'
+      build_system: 'include'
       pip: 'bidict'
 ```
 
