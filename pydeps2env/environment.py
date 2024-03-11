@@ -10,6 +10,21 @@ import yaml
 import warnings
 
 
+def clean_list(item: list, sort: bool = True) -> list:
+    """Remove duplicate entries from a list."""
+    pass
+
+
+def split_extras(filename: str) -> tuple[str, set]:
+    """Split extras requirements indicated in []."""
+    if "[" in filename:
+        filename, extras = filename.split("[", 1)
+        extras = set(extras.split("]", 1)[0].split(","))
+    else:
+        extras = {}
+    return filename, extras
+
+
 def add_requirement(
     req: Requirement | str,
     requirements: dict[str, Requirement],
@@ -45,16 +60,29 @@ def combine_requirements(
 class Environment:
     filename: str | Path
     channels: list[str] = field(default_factory=lambda: ["conda-forge"])
-    extras: list[str] = field(default_factory=list)
+    extras: set[str] | list[str] = field(default_factory=set)
     pip_packages: set[str] = field(default_factory=set)  # install via pip
     requirements: dict[str, Requirement] = field(default_factory=dict, init=False)
     build_system: dict[str, Requirement] = field(default_factory=dict, init=False)
 
     def __post_init__(self):
+        # cleanup duplicates etc.
+        self.extras = set(self.extras)
+        self.channels = list(dict.fromkeys(self.channels))
+        self.pip_packages = set(self.pip_packages)
+
+        if isinstance(self.filename, str):
+            self.filename, extras = split_extras(self.filename)
+            self.extras |= set(extras)
+
         if Path(self.filename).suffix == ".toml":
             self.load_pyproject()
         elif Path(self.filename).suffix == ".cfg":
             self.load_config()
+        elif Path(self.filename).suffix in [".yaml", ".yml"]:
+            self.load_yaml()
+        elif Path(self.filename).suffix in [".txt"]:
+            self.load_txt()
         else:
             raise ValueError(f"Unsupported input {self.filename}")
 
@@ -104,7 +132,35 @@ class Environment:
             for dep in extra_deps:
                 add_requirement(dep, self.requirements)
 
-    def _get_dependencies(self, include_build_system: bool = True):
+    def load_yaml(self):
+        """Load a conda-style environment.yaml file."""
+        with open(self.filename, "r") as f:
+            env = yaml.load(f.read(), yaml.SafeLoader)
+
+        self.channels += env.get("channels", [])
+        self.channels = list(dict.fromkeys(self.channels))
+
+        for dep in env.get("dependencies"):
+            if isinstance(dep, str):
+                add_requirement(dep, self.requirements)
+            elif isinstance(dep, dict) and "pip" in dep:
+                add_requirement("pip", self.requirements)
+                for pip_dep in dep["pip"]:
+                    req = Requirement(pip_dep)
+                    self.pip_packages |= {req.name}
+                    add_requirement(req, self.requirements)
+
+    def load_txt(self):
+        """Load simple list of requirements from txt file."""
+        with open(self.filename, "r") as f:
+            deps = f.readlines()
+
+        for dep in deps:
+            add_requirement(dep, self.requirements)
+
+    def _get_dependencies(
+        self, include_build_system: bool = True
+    ) -> tuple[list[str], list[str]]:
         """Get the default conda environment entries."""
 
         reqs = self.requirements.copy()
@@ -132,7 +188,9 @@ class Environment:
 
         conda_env = {"channels": self.channels, "dependencies": deps.copy()}
         if pip:
-            conda_env["dependencies"] += ["pip", {"pip": pip}]
+            if "pip" not in self.requirements:
+                conda_env["dependencies"] += ["pip"]
+            conda_env["dependencies"] += [{"pip": pip}]
 
         if outfile is None:
             return conda_env
@@ -150,3 +208,9 @@ class Environment:
                 )
             with open(p, "w") as outfile:
                 yaml.dump(conda_env, outfile, default_flow_style=False)
+
+    def combine(self, other: Environment):
+        """Merge other Environment requirements into this Environment."""
+        self.requirements = combine_requirements(self.requirements, other.requirements)
+        self.build_system = combine_requirements(self.build_system, other.build_system)
+        self.pip_packages = self.pip_packages | other.pip_packages

@@ -8,16 +8,15 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        config_file: [./test/setup.cfg, ./test/pyproject.toml]
     steps:
     - uses: actions/checkout@v4
     - name: run local action code
       uses: ./
       with:
-        file: ${{ matrix.config_file }}
+        files: ./test/pyproject.toml[doc] ./test/setup.cfg[pip_only] ./test/environment.yaml ./test/requirements.txt
         output: environment_test.yml
         channels: conda-forge defaults
-        extras: test pip_only
+        extras: test
         setup_requires: include
         pip: bidict
     - uses: mamba-org/setup-micromamba@v1.8.0
@@ -34,8 +33,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        config_file: [./test/setup.cfg, ./test/pyproject.toml]
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
@@ -44,4 +41,4 @@ jobs:
     - name: pip install package
       run: pip install .
     - name: test cmd script
-      run: pydeps2env ${{ matrix.config_file }} output.yaml -c defaults --extras test -b include --pip pandas
+      run: pydeps2env ./test/setup.cfg ./test/pyproject.toml[doc] ./test/environment.yaml ./test/requirements.txt -o output.yaml -c defaults --extras test -b include --pip pandas

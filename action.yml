@@ -1,11 +1,11 @@
 name: pydeps2env
 description: create conda environment file from python project dependencies
 inputs:
-  file:
+  files:
     description: >-
-      Specify the location of the 'setup.cfg' file to parse. (defaults to 'setup.cfg')
+      Specify the location of the dependencies files to parse. (defaults to 'pyproject.toml')
     required: true
-    default: setup.cfg
+    default: pyproject.toml
   output:
     description: >-
       Specify the location and name of the conda environment file to generate. (defaults to 'environment.yml')
@@ -39,7 +39,8 @@ runs:
   - name: create environment file
     run: >
       pip3 install tomli packaging pyyaml &&
-      python3 $GITHUB_ACTION_PATH/pydeps2env/generate_environment.py ${{ inputs.file }} ${{ inputs.output }}
+      python3 $GITHUB_ACTION_PATH/pydeps2env/generate_environment.py ${{ inputs.files }}
+      --output ${{ inputs.output }}
       --channels ${{ inputs.channels }}
       --extras ${{ inputs.extras }}
       --setup_requires ${{ inputs.setup_requires }}

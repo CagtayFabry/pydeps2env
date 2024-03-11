@@ -13,6 +13,9 @@ dependencies = [
   "pandas>=1",
 ]
 [project.optional-dependencies]
+doc = [
+  "sphinx",
+]
 pip_only = [
   "bidict",
 ]
