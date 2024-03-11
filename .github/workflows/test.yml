@@ -17,7 +17,7 @@ jobs:
         output: environment_test.yml
         channels: conda-forge defaults
         extras: test
-        setup_requires: include
+        build_system: include
         pip: bidict
     - uses: mamba-org/setup-micromamba@v1.8.0
       with:
