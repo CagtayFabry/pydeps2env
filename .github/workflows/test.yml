@@ -2,7 +2,7 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   demo_job:
-    name: create test env
+    name: action
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -29,7 +29,7 @@ jobs:
         cache-environment: true
 
   test_script:
-    name: create test env
+    name: script
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
