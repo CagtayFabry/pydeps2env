@@ -13,9 +13,10 @@ def create_environment_file(
     output_file: str,
     channels: list[str],
     extras: list[str],
-    pip: list[str],
+    pip: set[str],
     include_build_system: bool = False,
 ):
+    pip = set(pip)
     env = Environment(filename[0], pip_packages=pip, extras=extras, channels=channels)
     for f in filename[1:]:
         env.combine(Environment(f, pip_packages=pip, extras=extras, channels=channels))

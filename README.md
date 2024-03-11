@@ -12,7 +12,10 @@ The project contains
 flowchart LR
     pyproject.toml --> pydeps2env
     setup.cfg --> pydeps2env
+    environment.yaml --> pydeps2env
+    requirements.txt --> pydeps2env
     pydeps2env --> environment.yaml
+    pydeps2env --> R2[requirements.txt]
 ```
 
 ## basic usage (GitHub action)
