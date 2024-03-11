@@ -13,7 +13,7 @@ jobs:
     - name: run local action code
       uses: ./
       with:
-        files: ./test/pyproject.toml[doc] ./test/setup.cfg[pip_only]
+        files: ./test/pyproject.toml[doc] ./test/setup.cfg[pip_only] ./test/environment.yaml ./test/requirements.txt
         output: environment_test.yml
         channels: conda-forge defaults
         extras: test
@@ -41,4 +41,4 @@ jobs:
     - name: pip install package
       run: pip install .
     - name: test cmd script
-      run: pydeps2env ./test/setup.cfg ./test/pyproject.toml[doc] -o output.yaml -c defaults --extras test -b include --pip pandas
+      run: pydeps2env ./test/setup.cfg ./test/pyproject.toml[doc] ./test/environment.yaml ./test/requirements.txt -o output.yaml -c defaults --extras test -b include --pip pandas
