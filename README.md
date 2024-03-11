@@ -14,7 +14,7 @@ flowchart LR
     setup.cfg --> pydeps2env
     environment.yaml --> pydeps2env
     requirements.txt --> pydeps2env
-    pydeps2env --> environment.yaml
+    pydeps2env --> E2[environment.yaml]
     pydeps2env --> R2[requirements.txt]
 ```
 
