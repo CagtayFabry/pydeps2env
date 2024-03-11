@@ -22,9 +22,9 @@ inputs:
       Specify one or more optional [extras_require] sections to add to the environment
       (e.g. 'test' to include package that you would normally install with 'pip install pkg[test]')
     required: false
-  setup_requires:
+  build_system:
     description: >-
-      if set to 'include' the dependencies listed under [options]:setup_requires will be added to the environment
+      if set to 'include' the dependencies listed under [build-system] or [options]:setup_requires will be added to the environment
       (default is 'omit' so no setup dependencies will be installed)
     required: false
     default: omit
@@ -43,7 +43,7 @@ runs:
       --output ${{ inputs.output }}
       --channels ${{ inputs.channels }}
       --extras ${{ inputs.extras }}
-      --setup_requires ${{ inputs.setup_requires }}
+      --build_system ${{ inputs.build_system }}
       --pip ${{ inputs.pip }}
     shell: bash
   - name: show environment file
