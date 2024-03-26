@@ -27,6 +27,33 @@ def create_environment_file(
     env.export(output_file, include_build_system=_include, remove=remove)
 
 
+def create_environment(
+    sources: list[str],
+    requirements: list[str] = None,
+    channels: list[str] = None,
+    extras: list[str] = None,
+    pip: set[str] = None,
+):
+    if requirements is None:
+        requirements = []
+    if channels is None:
+        channels = ["conda-forge"]
+    if extras is None:
+        extras = []
+    if pip is None:
+        pip = []
+
+    env = Environment(sources[0], pip_packages=pip, extras=extras, channels=channels)
+    for source in sources[1:]:
+        env.combine(
+            Environment(source, pip_packages=pip, extras=extras, channels=channels)
+        )
+
+    env.add_requirements(requirements)
+
+    return env
+
+
 def main():
     import argparse
 

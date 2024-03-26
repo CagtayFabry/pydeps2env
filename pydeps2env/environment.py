@@ -82,6 +82,7 @@ class Environment:
     channels: list[str] = field(default_factory=lambda: ["conda-forge"])
     extras: set[str] | list[str] = field(default_factory=set)
     pip_packages: set[str] = field(default_factory=set)  # install via pip
+    extra_requirements: list[str] = field(default_factory=list)
     requirements: dict[str, Requirement] = field(default_factory=dict, init=False)
     build_system: dict[str, Requirement] = field(default_factory=dict, init=False)
 
@@ -90,6 +91,18 @@ class Environment:
         self.extras = set(self.extras)
         self.channels = list(dict.fromkeys(self.channels))
         self.pip_packages = set(self.pip_packages)
+
+        if self.filename:
+            self._read_source()
+
+    def add_requirements(self, requirements: list[str]):
+        """Manually add a list of additional requirements to the environment."""
+
+        for req in requirements:
+            add_requirement(req, self.requirements)
+
+    def _read_source(self):
+        """Read and parse source definition and add requirements."""
 
         # parse and remove extra specs from filename
         if isinstance(self.filename, str):
@@ -217,7 +230,9 @@ class Environment:
         deps = [
             str(r)
             for r in reqs.values()
-            if r.name not in self.pip_packages and r.name not in remove
+            if isinstance(r, Requirement)
+            and r.name not in self.pip_packages
+            and r.name not in remove
         ]
         deps.sort(key=str.lower)
         if _python:
@@ -226,7 +241,8 @@ class Environment:
         pip = [
             str(r)
             for r in reqs.values()
-            if r.name in self.pip_packages and r.name not in remove
+            if (not isinstance(r, Requirement) or r.name in self.pip_packages)
+            and r.name not in remove
         ]
         pip.sort(key=str.lower)
 
