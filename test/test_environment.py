@@ -12,8 +12,10 @@ _inputs = [
     # "https://raw.githubusercontent.com/BAMWelDX/weldx/master/doc/rtd_environment.yml",
 ]
 
+
 class TestEnvironment:
     """Test base Environment class."""
+
     # test_init ------------------------------------------------------------------------
 
     @pytest.mark.parametrize("filename", _inputs)
