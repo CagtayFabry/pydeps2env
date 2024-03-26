@@ -14,7 +14,9 @@ def create_environment_file(
     channels: list[str],
     extras: list[str],
     pip: set[str],
-    include_build_system: bool = False,
+    remove: set[str],
+    *,
+    include_build_system: str = "omit",
 ):
     pip = set(pip)
     env = Environment(filename[0], pip_packages=pip, extras=extras, channels=channels)
@@ -22,7 +24,7 @@ def create_environment_file(
         env.combine(Environment(f, pip_packages=pip, extras=extras, channels=channels))
 
     _include = include_build_system == "include"
-    env.export(output_file, include_build_system=_include)
+    env.export(output_file, include_build_system=_include, remove=remove)
 
 
 def main():
@@ -45,6 +47,7 @@ def main():
         choices=["omit", "include"],
     )
     parser.add_argument("-p", "--pip", type=str, nargs="*", default=[])
+    parser.add_argument("-r", "--remove", type=str, nargs="*", default=[])
     args = parser.parse_args()
 
     for file in args.setup:
@@ -59,6 +62,7 @@ def main():
         extras=args.extras,
         pip=args.pip,
         include_build_system=args.build_system,
+        remove=args.remove,
     )
 
 
