@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, InitVar
 from packaging.requirements import Requirement
 from pathlib import Path
 from collections import defaultdict
@@ -69,11 +69,11 @@ class Environment:
     pip_packages: set[str] = field(
         default_factory=set
     )  # names of packages to install via pip
-    extra_requirements: list[str] = field(default_factory=list)
+    extra_requirements: InitVar[list[str]] = None
     requirements: dict[str, Requirement] = field(default_factory=dict, init=False)
     build_system: dict[str, Requirement] = field(default_factory=dict, init=False)
 
-    def __post_init__(self):
+    def __post_init__(self, extra_requirements):
         # cleanup duplicates etc.
         self.extras = set(self.extras)
         self.channels = list(dict.fromkeys(self.channels))
@@ -82,14 +82,23 @@ class Environment:
         if self.filename:
             self._read_source()
 
+        if extra_requirements:
+            self.add_requirements(extra_requirements)
+
         # packages with url specification must be pip installed
         self.pip_packages |= {req.name for req in self.requirements.values() if req.url}
 
     def add_requirements(self, requirements: list[str]):
-        """Manually add a list of additional requirements to the environment."""
+        """Add a list of additional requirements to the environment."""
 
         for req in requirements:
             add_requirement(req, self.requirements)
+
+    def add_build_system(self, requirements: list[str]):
+        """Manually add a list of additional requirements to the build system specification."""
+
+        for req in requirements:
+            add_requirement(req, self.build_system)
 
     def _read_source(self):
         """Read and parse source definition and add requirements."""
@@ -136,20 +145,12 @@ class Environment:
         cp = defaultdict(dict, tomldict)
 
         if python := cp["project"].get("requires-python"):
-            add_requirement("python" + python, self.requirements)
+            self.add_requirements(["python" + python])
 
-        for dep in cp.get("project").get("dependencies"):
-            add_requirement(dep, self.requirements)
-
-        for dep in cp.get("build-system").get("requires"):
-            add_requirement(dep, self.build_system)
-
+        self.add_requirements(cp.get("project").get("dependencies"))
+        self.add_build_system(cp.get("build-system").get("requires"))
         for e in self.extras:
-            extra_deps = cp.get("project").get("optional-dependencies").get(e)
-            if not extra_deps:
-                continue
-            for dep in extra_deps:
-                add_requirement(dep, self.requirements)
+            self.add_requirements(cp.get("project").get("optional-dependencies").get(e))
 
     def load_config(self, contents: bytes):
         """Load contents from a cfg file (assume setup.cfg layout)."""
@@ -162,20 +163,12 @@ class Environment:
         cp.read_string(contents.decode("UTF-8"))
 
         if python := cp.get("options", "python_requires"):
-            add_requirement("python" + python, self.requirements)
+            self.add_requirements(["python" + python])
 
-        for dep in cp.getlist("options", "install_requires"):
-            add_requirement(dep, self.requirements)
-
-        for dep in cp.getlist("options", "setup_requires"):
-            add_requirement(dep, self.build_system)
-
+        self.add_requirements(cp.getlist("options", "install_requires"))
+        self.add_build_system(cp.getlist("options", "setup_requires"))
         for e in self.extras:
-            extra_deps = cp.getlist("options.extras_require", e)
-            if not extra_deps:
-                continue
-            for dep in extra_deps:
-                add_requirement(dep, self.requirements)
+            self.add_requirements(cp.getlist("options.extras_require", e))
 
     def load_yaml(self, contents: bytes):
         """Load a conda-style environment.yaml file."""
@@ -198,8 +191,7 @@ class Environment:
         """Load simple list of requirements from txt file."""
         deps = StringIO(contents.decode()).readlines()
 
-        for dep in deps:
-            add_requirement(dep.strip(), self.requirements)
+        self.add_requirements([dep.strip() for dep in deps])
 
     def _get_dependencies(
         self,
