@@ -27,3 +27,11 @@ class TestEnvironment:
 
         env = Environment(filename)
         assert "python" in env.requirements
+        if filename.startswith("./test/pyproject.toml"):
+            assert "pydeps2env" in env.requirements
+            assert "pydeps2env" in env.pip_packages
+
+            conda, pip = env._get_dependencies()
+            assert (
+                "pydeps2env@ git+https://github.com/CagtayFabry/pydeps2env.git" in pip
+            )

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from packaging.requirements import Requirement, InvalidRequirement, ParserSyntaxError
+from packaging.requirements import Requirement
 from pathlib import Path
 from collections import defaultdict
 import configparser
@@ -9,31 +9,7 @@ import tomli as tomllib
 import yaml
 import warnings
 from io import StringIO, BytesIO
-
-
-@dataclass(frozen=True)
-class CustomRequirement:
-    name: str
-
-    def __str__(self) -> str:
-        return self.name
-
-
-def _parse_requirement(req) -> Requirement | CustomRequirement:
-    if isinstance(req, (Requirement, CustomRequirement)):
-        return req
-
-    try:
-        req = Requirement(req)
-    except (InvalidRequirement, ParserSyntaxError, TypeError):
-        req = CustomRequirement(name=req)
-
-    return req
-
-
-def clean_list(item: list, sort: bool = True) -> list:
-    """Remove duplicate entries from a list."""
-    pass
+from warnings import warn
 
 
 def split_extras(filename: str) -> tuple[str, set]:
@@ -53,12 +29,21 @@ def add_requirement(
 ):
     """Add a requirement to existing requirement specification (in place)."""
 
-    req = _parse_requirement(req)
+    if not isinstance(req, Requirement):
+        req = Requirement(req)
 
     if req.name not in requirements:
         requirements[req.name] = req
     elif mode == "combine":
         requirements[req.name].specifier &= req.specifier
+        if req.url:
+            if requirements[req.name].url and requirements[req.name].url != req.url:
+                warn(
+                    f"Replacing url for package {req.name}: {requirements[req.name].url} -> req.url",
+                    UserWarning,
+                    stacklevel=1,
+                )
+                requirements[req.name].url = req.url
     elif mode == "replace":
         requirements[req.name] = req
     else:
@@ -81,7 +66,9 @@ class Environment:
     filename: str | Path
     channels: list[str] = field(default_factory=lambda: ["conda-forge"])
     extras: set[str] | list[str] = field(default_factory=set)
-    pip_packages: set[str] = field(default_factory=set)  # install via pip
+    pip_packages: set[str] = field(
+        default_factory=set
+    )  # names of packages to install via pip
     extra_requirements: list[str] = field(default_factory=list)
     requirements: dict[str, Requirement] = field(default_factory=dict, init=False)
     build_system: dict[str, Requirement] = field(default_factory=dict, init=False)
@@ -94,6 +81,9 @@ class Environment:
 
         if self.filename:
             self._read_source()
+
+        # packages with url specification must be pip installed
+        self.pip_packages |= {req.name for req in self.requirements.values() if req.url}
 
     def add_requirements(self, requirements: list[str]):
         """Manually add a list of additional requirements to the environment."""
@@ -200,7 +190,7 @@ class Environment:
             elif isinstance(dep, dict) and "pip" in dep:
                 add_requirement("pip", self.requirements)
                 for pip_dep in dep["pip"]:
-                    req = _parse_requirement(pip_dep)
+                    req = Requirement(pip_dep)
                     self.pip_packages |= {req.name}
                     add_requirement(req, self.requirements)
 
@@ -209,7 +199,7 @@ class Environment:
         deps = StringIO(contents.decode()).readlines()
 
         for dep in deps:
-            add_requirement(dep, self.requirements)
+            add_requirement(dep.strip(), self.requirements)
 
     def _get_dependencies(
         self,
@@ -227,11 +217,14 @@ class Environment:
 
         _python = reqs.pop("python", None)
 
+        _pip_packages = self.pip_packages
+        # _pip_packages |= {r.name for r in reqs.values() if r.url}
+
         deps = [
             str(r)
             for r in reqs.values()
             if isinstance(r, Requirement)
-            and r.name not in self.pip_packages
+            and r.name not in _pip_packages
             and r.name not in remove
         ]
         deps.sort(key=str.lower)
@@ -241,7 +234,7 @@ class Environment:
         pip = [
             str(r)
             for r in reqs.values()
-            if (not isinstance(r, Requirement) or r.name in self.pip_packages)
+            if (not isinstance(r, Requirement) or r.name in _pip_packages)
             and r.name not in remove
         ]
         pip.sort(key=str.lower)
