@@ -1,6 +1,21 @@
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
+  pytest:
+    name: pytest
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - name: pip install package
+      run: pip install .[test]
+    - name: run pytest
+      run: pytest
+
   demo_job:
     name: action
     runs-on: ${{ matrix.os }}
