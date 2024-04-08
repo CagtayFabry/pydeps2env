@@ -223,12 +223,12 @@ class Environment:
         if _python:
             deps = [str(_python)] + deps
 
-        pip = [
-            str(r)
-            for r in reqs.values()
-            if (not isinstance(r, Requirement) or r.name in _pip_packages)
-            and r.name not in remove
-        ]
+        pip = []
+        for r in reqs.values():
+            if (
+                not isinstance(r, Requirement) or r.name in _pip_packages
+            ) and r.name not in remove:
+                pip.append(str(r) if not r.url else r.url)
         pip.sort(key=str.lower)
 
         return deps, pip
