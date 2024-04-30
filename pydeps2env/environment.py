@@ -9,7 +9,7 @@ import sys
 import yaml
 import warnings
 
-if sys.version < "3.11":
+if sys.version_info < (3, 11):
     import tomli as tomllib
 else:
     import tomllib
