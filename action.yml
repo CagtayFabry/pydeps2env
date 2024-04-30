@@ -41,7 +41,7 @@ runs:
   steps:
   - name: create environment file
     run: >
-      pip3 install tomli packaging pyyaml &&
+      pip3 install tomli packaging pyyaml --break-system-packages &&
       python3 $GITHUB_ACTION_PATH/pydeps2env/generate_environment.py ${{ inputs.files }}
       --output ${{ inputs.output }}
       --channels ${{ inputs.channels }}

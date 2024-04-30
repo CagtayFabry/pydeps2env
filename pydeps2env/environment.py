@@ -5,9 +5,14 @@ from packaging.requirements import Requirement
 from pathlib import Path
 from collections import defaultdict
 import configparser
-import tomli as tomllib
+import sys
 import yaml
 import warnings
+
+if sys.version < "3.11":
+    import tomli as tomllib
+else:
+    import tomllib
 
 
 def clean_list(item: list, sort: bool = True) -> list:
