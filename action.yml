@@ -39,14 +39,9 @@ inputs:
 runs:
   using: composite
   steps:
-  - name: install dependencies
-    run: >
-      pip3 install tomli packaging pyyaml $PIP_OPTIONS
-    shell: bash
-    env:
-      PIP_OPTIONS: ${{ runner.os == 'macOS' && '--break-system-packages' || '' }}
   - name: create environment file
     run: >
+      pip3 install tomli packaging pyyaml $PIP_OPTIONS &&
       python3 $GITHUB_ACTION_PATH/pydeps2env/generate_environment.py ${{ inputs.files }}
       --output ${{ inputs.output }}
       --channels ${{ inputs.channels }}
@@ -54,6 +49,8 @@ runs:
       --build_system ${{ inputs.build_system }}
       --pip ${{ inputs.pip }}
     shell: bash
+    env:
+      PIP_OPTIONS: ${{ runner.os == 'macOS' && '--break-system-packages' || '' }}
   - name: show environment file
     run: cat ${{ inputs.output }}
     shell: bash
