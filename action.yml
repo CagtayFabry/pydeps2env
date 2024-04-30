@@ -44,7 +44,7 @@ runs:
       pip3 install tomli packaging pyyaml $PIP_OPTIONS
     shell: bash
     env:
-      PIP_OPTIONS: --break-system-packages
+      PIP_OPTIONS: fromJSON('{"Linux":"","macOS":"--break-system-packages","Windows":""}')[runner.os]
   - name: create environment file
     run: >
       python3 $GITHUB_ACTION_PATH/pydeps2env/generate_environment.py ${{ inputs.files }}
