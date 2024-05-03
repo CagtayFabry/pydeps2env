@@ -5,11 +5,20 @@ from packaging.requirements import Requirement
 from pathlib import Path
 from collections import defaultdict
 import configparser
-import tomli as tomllib
+import sys
 import yaml
-import warnings
 from io import StringIO, BytesIO
 from warnings import warn
+
+if sys.version_info < (3, 11):
+    import tomli as tomllib
+else:
+    import tomllib
+
+
+def clean_list(item: list, sort: bool = True) -> list:
+    """Remove duplicate entries from a list."""
+    pass
 
 
 def split_extras(filename: str) -> tuple[str, set]:
@@ -264,7 +273,7 @@ class Environment:
                 outfile.writelines("\n".join(deps))
         else:
             if p.suffix not in [".yaml", ".yml"]:
-                warnings.warn(
+                warn(
                     f"Unknown environment format `{p.suffix}`, generating conda yaml output."
                 )
             with open(p, "w") as outfile:
