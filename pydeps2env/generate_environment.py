@@ -20,6 +20,7 @@ def create_environment_file(
     remove: set[str] = None,
     additional_requirements: list[str] = None,
     include_build_system: str = "omit",
+    name: str = None,
 ):
     if channels is None:
         channels = ["conda-forge"]
@@ -43,7 +44,7 @@ def create_environment_file(
         env.combine(Environment(f, pip_packages=pip, extras=extras, channels=channels))
 
     _include = include_build_system == "include"
-    env.export(output, include_build_system=_include, remove=remove)
+    env.export(output, include_build_system=_include, remove=remove, name=name)
 
 
 def create_from_definition(env_def: str):

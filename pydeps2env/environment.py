@@ -247,6 +247,7 @@ class Environment:
         outfile: str | Path = "environment.yaml",
         include_build_system: bool = True,
         remove: list[str] = None,
+        name: str = None,
     ):
         """Export the environment to a yaml or txt file."""
         if remove is None:
@@ -256,11 +257,17 @@ class Environment:
             include_build_system=include_build_system, remove=remove
         )
 
-        conda_env = {"channels": self.channels, "dependencies": deps.copy()}
+        conda_env = {
+            "name": name,
+            "channels": self.channels,
+            "dependencies": deps.copy(),
+        }
         if pip:
             if "pip" not in self.requirements:
                 conda_env["dependencies"] += ["pip"]
             conda_env["dependencies"] += [{"pip": pip}]
+
+        conda_env = {k: v for k, v in conda_env.items() if v}
 
         if outfile is None:
             return conda_env
@@ -277,7 +284,7 @@ class Environment:
                     f"Unknown environment format `{p.suffix}`, generating conda yaml output."
                 )
             with open(p, "w") as outfile:
-                yaml.dump(conda_env, outfile, default_flow_style=False)
+                yaml.dump(conda_env, outfile, default_flow_style=False, sort_keys=False)
 
     def combine(self, other: Environment):
         """Merge other Environment requirements into this Environment."""
