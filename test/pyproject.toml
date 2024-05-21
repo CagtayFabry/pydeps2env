@@ -1,3 +1,11 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+  "setuptools>=40.9",
+  "setuptools-scm",
+  "wheel",
+]
+
 [project]
 name = "test"
 requires-python = ">=3.8,<3.10"
@@ -8,30 +16,20 @@ classifiers = [
 ]
 dependencies = [
   "boltons",
-  "IPython",
+  "ipython",
   "numpy>=1.20",
   "pandas>=1",
   "pydeps2env@ git+https://github.com/CagtayFabry/pydeps2env.git",
 ]
-[project.optional-dependencies]
-doc = [
+optional-dependencies.doc = [
   "sphinx",
 ]
-pip_only = [
+optional-dependencies.pip_only = [
   "bidict",
 ]
-test = [
+optional-dependencies.test = [
   "pytest",
 ]
-[project.urls]
-author = "Cagtay Fabry <cagtay.fabry@bam.de>"
-author_email = "cagtay.fabry@bam.de"
-home_page = "https://github.com/CagtayFabry/pydeps2env"
-
-[build-system]
-build-backend = "setuptools.build_meta"
-requires = [
-  "setuptools>=40.9",
-  "setuptools_scm",
-  "wheel",
-]
+urls.author = "Cagtay Fabry <cagtay.fabry@bam.de>"
+urls.author_email = "cagtay.fabry@bam.de"
+urls.home_page = "https://github.com/CagtayFabry/pydeps2env"

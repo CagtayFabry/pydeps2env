@@ -1,14 +1,21 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+  "setuptools>=64",
+  "setuptools-scm[toml]>=6.2",
+]
+
 [project]
 name = "pydeps2env"
 description = "A python helper to generate conda environment files from project dependencies."
-readme = {file = "README.md", content-type="text/markdown"}
+readme = { file = "README.md", content-type = "text/markdown" }
 keywords = [
   "conda",
   "pyproject",
 ]
-license = {file = "LICENSE", name="BSD License"}
+license = { file = "LICENSE", name = "BSD License" }
 authors = [
-    {name="Çağtay Fabry", email="cagtay.fabry@bam.de"},
+  { name = "Çağtay Fabry", email = "cagtay.fabry@bam.de" },
 ]
 requires-python = ">=3.9"
 classifiers = [
@@ -31,29 +38,22 @@ dynamic = [
 dependencies = [
   "packaging",
   "pyyaml",
-  'tomli; python_version < "3.11"',
+  "tomli; python_version<'3.11'",
 ]
-[project.optional-dependencies]
-test = [
+optional-dependencies.test = [
   # needed to run the test suite
   "pytest",
   "pytest-cov",
 ]
-[project.urls]
-bug_tracker = "https://github.com/CagtayFabry/pydeps2env/-/issues"
-repository = "https://github.com/CagtayFabry/pydeps2env"
-[project.scripts]
-pydeps2env = "pydeps2env.generate_environment:main"
-
-[build-system]
-build-backend = "setuptools.build_meta"
-requires = [
-  "setuptools>=64",
-  "setuptools_scm[toml]>=6.2",
-]
+urls.bug_tracker = "https://github.com/CagtayFabry/pydeps2env/-/issues"
+urls.repository = "https://github.com/CagtayFabry/pydeps2env"
+scripts.pydeps2env = "pydeps2env.generate_environment:main"
 
 [tool.setuptools.packages]
-find = {exclude = ["test", "resources"]}
+find = { exclude = [
+  "test",
+  "resources",
+] }
 
 [tool.setuptools_scm]
 write_to = "pydeps2env/_version.py"
