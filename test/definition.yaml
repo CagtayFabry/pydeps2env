@@ -1,0 +1,29 @@
+# the target file to create
+output: test-configuration.yaml
+# default name of the environment
+name: test-env
+# conda channels to include
+channels:
+- conda-forge
+- defaults
+# list of source files that define sub environments
+# these will be loaded as Environment()
+sources:
+- ./test/environment.yaml
+- ./test/local.yaml
+- ./test/pyproject.toml[doc]
+- ./test/requirements.txt
+- https://github.com/CagtayFabry/pydeps2env/blob/custom_deps/pyproject.toml
+# extras to apply to all sources and packages
+extras:
+- test
+# dependencies that should be removed after collection
+remove:
+- pyyaml
+additional_requirements:
+- urllib3
+# include build system dependencies
+# list of dependencies that must be pip installed (excluding auto-sorted depedencies like urls)
+pip:
+- urllib3
+include_build_system: include
