@@ -110,7 +110,7 @@ def main():
     )
     args = parser.parse_args()
 
-    for file in args.setup:
+    for file in args.sources:
         filename, _ = split_extras(file)
         if not Path(filename).is_file():
             raise FileNotFoundError(f"Could not find file {filename}")
