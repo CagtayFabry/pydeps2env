@@ -39,9 +39,14 @@ class TestEnvironment:
 
 
 def test_multiple_sources():
-    env = create_environment(_inputs, extras=["test"], pip=["urllib3", "pandas"])
+    env = create_environment(
+        _inputs,
+        extras=["test"],
+        pip=["urllib3", "pandas"],
+        additional_requirements=["k3d"],
+    )
 
-    for req in ["python", "pydeps2env", "testproject", "urllib3", "pytest"]:
+    for req in ["python", "pydeps2env", "testproject", "urllib3", "pytest", "k3d"]:
         assert req in env.requirements
 
     for req in ["testproject", "pydeps2env", "requests", "pandas"]:

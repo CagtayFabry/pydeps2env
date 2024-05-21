@@ -17,31 +17,24 @@ def create_environment_file(
     channels: list[str] = None,
     extras: list[str] = None,
     pip: set[str] = None,
-    remove: set[str] = None,
     additional_requirements: list[str] = None,
+    remove: set[str] = None,
     include_build_system: str = "omit",
     name: str = None,
 ):
-    if channels is None:
-        channels = ["conda-forge"]
-    if extras is None:
-        extras = []
-    if pip is None:
-        pip = []
     if remove is None:
         remove = {}
     if additional_requirements is None:
         additional_requirements = []
     pip = set(pip)
-    env = Environment(
-        sources[0],
-        pip_packages=pip,
-        extras=extras,
+
+    env = create_environment(
+        sources=sources,
+        requirements=additional_requirements,
         channels=channels,
-        extra_requirements=additional_requirements,
+        extras=extras,
+        pip=pip,
     )
-    for f in sources[1:]:
-        env.combine(Environment(f, pip_packages=pip, extras=extras, channels=channels))
 
     _include = include_build_system == "include"
     env.export(output, include_build_system=_include, remove=remove, name=name)
@@ -55,19 +48,20 @@ def create_from_definition(env_def: str):
 
 def create_environment(
     sources: list[str],
-    requirements: list[str] = None,
+    *,
     channels: list[str] = None,
     extras: list[str] = None,
     pip: set[str] = None,
+    additional_requirements: list[str] = None,
 ):
-    if requirements is None:
-        requirements = []
     if channels is None:
         channels = ["conda-forge"]
     if extras is None:
         extras = []
     if pip is None:
         pip = []
+    if additional_requirements is None:
+        additional_requirements = []
 
     env = Environment(sources[0], pip_packages=pip, extras=extras, channels=channels)
     for source in sources[1:]:
@@ -75,7 +69,7 @@ def create_environment(
             Environment(source, pip_packages=pip, extras=extras, channels=channels)
         )
 
-    env.add_requirements(requirements)
+    env.add_requirements(additional_requirements)
 
     return env
 
