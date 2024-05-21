@@ -22,8 +22,32 @@ def create_environment_file(
     include_build_system: str = "omit",
     name: str = None,
 ):
+    """Create an environment file from multiple source files and additional requirements.
+
+    Parameters
+    ----------
+    sources
+        The list of source files to combine.
+    output
+        The output filename to generate
+    channels
+        Conda channels to include.
+    extras
+        Extras specification to apply to all sources.
+    pip
+        List of dependencies to install via pip.
+    additional_requirements
+        Additional requirements to include in the environment.
+    remove
+        Remove selected requirements from the environment.
+    include_build_system
+        Include build system requirements by using `include`.
+    name
+        Name of the environment.
+
+    """
     if remove is None:
-        remove = {}
+        remove = set()
     if additional_requirements is None:
         additional_requirements = []
     pip = set(pip)
@@ -41,6 +65,14 @@ def create_environment_file(
 
 
 def create_from_definition(env_def: str):
+    """Create an environment from parameters stored in a definition YAML file.
+
+    Parameters
+    ----------
+    env_def
+        The definition file.
+
+    """
     with open(env_def, "r") as f:
         config = yaml.load(f.read(), yaml.SafeLoader)
     create_environment_file(**config)
@@ -54,6 +86,26 @@ def create_environment(
     pip: set[str] = None,
     additional_requirements: list[str] = None,
 ):
+    """Create an environment instance from multiple source files and additional requirements.
+
+    Parameters
+    ----------
+    sources
+        The list of source files to combine.
+    channels
+        Conda channels to include.
+    extras
+        Extras specification to apply to all sources.
+    pip
+        List of dependencies to install via pip.
+    additional_requirements
+        Additional requirements to include in the environment.
+
+    Returns
+    -------
+    Environment
+        The environment specification.
+    """
     if channels is None:
         channels = ["conda-forge"]
     if extras is None:

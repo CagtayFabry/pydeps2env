@@ -27,7 +27,7 @@ def split_extras(filename: str) -> tuple[str, set]:
         filename, extras = filename.split("[", 1)
         extras = set(extras.split("]", 1)[0].split(","))
     else:
-        extras = {}
+        extras = set()
     return filename, extras
 
 
