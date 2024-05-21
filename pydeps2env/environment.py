@@ -224,7 +224,7 @@ class Environment:
         deps = [
             str(r)
             for r in reqs.values()
-            if isinstance(r, Requirement)
+            if not r.url  # install via pip
             and r.name not in _pip_packages
             and r.name not in remove
         ]
@@ -232,12 +232,13 @@ class Environment:
         if _python:
             deps = [str(_python)] + deps
 
-        pip = []
-        for r in reqs.values():
-            if (
-                not isinstance(r, Requirement) or r.name in _pip_packages
-            ) and r.name not in remove:
-                pip.append(str(r) if not r.url else f"{r.name}@ {r.url}")
+        pip = [
+            r
+            for r in reqs.values()
+            if (r.name in _pip_packages or r.url) and r.name not in remove
+        ]
+        # string formatting
+        pip = [str(r) if not r.url else f"{r.name}@ {r.url}" for r in pip]
         pip.sort(key=str.lower)
 
         return deps, pip
