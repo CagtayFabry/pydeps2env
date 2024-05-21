@@ -94,6 +94,44 @@ Install pandas using `pip`.
 pydeps2env ./test/setup.cfg ./test/pyproject.toml[doc] ./test/environment.yaml ./test/requirements.txt -o output.yaml -c defaults --extras test -b include --pip pandas
 ```
 
+## advanced usage (definition file)
+
+Users can store complex configurations in a single yaml file and create the desired output using `create_from_definition`.
+Example definition file:
+
+```yaml
+# the target file to create
+output: test-configuration.yaml
+# default name of the environment
+name: test-env
+# conda channels to include
+channels:
+- conda-forge
+- defaults
+# list of source files that define sub environments
+# these will be loaded as Environment()
+sources:
+- ./test/environment.yaml
+- ./test/local.yaml
+- ./test/pyproject.toml[doc]
+- ./test/requirements.txt
+- https://github.com/CagtayFabry/pydeps2env/blob/custom_deps/pyproject.toml
+# extras to apply to all sources and packages
+extras:
+- test
+# dependencies that should be removed after collection
+remove:
+- pyyaml
+additional_requirements:
+- urllib3
+# include build system dependencies
+# list of dependencies that must be pip installed (excluding auto-sorted depedencies like urls)
+pip:
+- urllib3
+include_build_system: include
+
+```
+
 ## configuration options (GitHub action)
 
 To customize the output the input options are available to the action:
