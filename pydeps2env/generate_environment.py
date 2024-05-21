@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import yaml
+
 try:
     from pydeps2env.environment import Environment, split_extras
 except ModuleNotFoundError:  # try local file if not installed
@@ -9,20 +11,119 @@ except ModuleNotFoundError:  # try local file if not installed
 
 
 def create_environment_file(
-    filename: list[str],
-    output_file: str,
-    channels: list[str],
-    extras: list[str],
-    pip: set[str],
-    include_build_system: bool = False,
+    sources: list[str],
+    output: str = "environment.yml",
+    *,
+    channels: list[str] = None,
+    extras: list[str] = None,
+    pip: set[str] = None,
+    additional_requirements: list[str] = None,
+    remove: set[str] = None,
+    include_build_system: str = "omit",
+    name: str = None,
 ):
+    """Create an environment file from multiple source files and additional requirements.
+
+    Parameters
+    ----------
+    sources
+        The list of source files to combine.
+    output
+        The output filename to generate
+    channels
+        Conda channels to include.
+    extras
+        Extras specification to apply to all sources.
+    pip
+        List of dependencies to install via pip.
+    additional_requirements
+        Additional requirements to include in the environment.
+    remove
+        Remove selected requirements from the environment.
+    include_build_system
+        Include build system requirements by using `include`.
+    name
+        Name of the environment.
+
+    """
+    if remove is None:
+        remove = set()
+    if additional_requirements is None:
+        additional_requirements = []
     pip = set(pip)
-    env = Environment(filename[0], pip_packages=pip, extras=extras, channels=channels)
-    for f in filename[1:]:
-        env.combine(Environment(f, pip_packages=pip, extras=extras, channels=channels))
+
+    env = create_environment(
+        sources=sources,
+        additional_requirements=additional_requirements,
+        channels=channels,
+        extras=extras,
+        pip=pip,
+    )
 
     _include = include_build_system == "include"
-    env.export(output_file, include_build_system=_include)
+    env.export(output, include_build_system=_include, remove=remove, name=name)
+
+
+def create_from_definition(env_def: str):
+    """Create an environment from parameters stored in a definition YAML file.
+
+    Parameters
+    ----------
+    env_def
+        The definition file.
+
+    """
+    with open(env_def, "r") as f:
+        config = yaml.load(f.read(), yaml.SafeLoader)
+    create_environment_file(**config)
+
+
+def create_environment(
+    sources: list[str],
+    *,
+    channels: list[str] = None,
+    extras: list[str] = None,
+    pip: set[str] = None,
+    additional_requirements: list[str] = None,
+):
+    """Create an environment instance from multiple source files and additional requirements.
+
+    Parameters
+    ----------
+    sources
+        The list of source files to combine.
+    channels
+        Conda channels to include.
+    extras
+        Extras specification to apply to all sources.
+    pip
+        List of dependencies to install via pip.
+    additional_requirements
+        Additional requirements to include in the environment.
+
+    Returns
+    -------
+    Environment
+        The environment specification.
+    """
+    if channels is None:
+        channels = ["conda-forge"]
+    if extras is None:
+        extras = []
+    if pip is None:
+        pip = []
+    if additional_requirements is None:
+        additional_requirements = []
+
+    env = Environment(sources[0], pip_packages=pip, extras=extras, channels=channels)
+    for source in sources[1:]:
+        env.combine(
+            Environment(source, pip_packages=pip, extras=extras, channels=channels)
+        )
+
+    env.add_requirements(additional_requirements)
+
+    return env
 
 
 def main():
@@ -30,7 +131,11 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "setup", type=str, nargs="*", default="pyproject.toml", help="dependency file"
+        "sources",
+        type=str,
+        nargs="*",
+        default="pyproject.toml",
+        help="dependency files and sources",
     )
     parser.add_argument(
         "-o", "--output", type=str, default="environment.yml", help="output file"
@@ -45,19 +150,25 @@ def main():
         choices=["omit", "include"],
     )
     parser.add_argument("-p", "--pip", type=str, nargs="*", default=[])
+    parser.add_argument("-r", "--remove", type=str, nargs="*", default=[])
+    parser.add_argument(
+        "-a", "--additional_requirements", type=str, nargs="*", default=[]
+    )
     args = parser.parse_args()
 
-    for file in args.setup:
+    for file in args.sources:
         filename, _ = split_extras(file)
         if not Path(filename).is_file():
             raise FileNotFoundError(f"Could not find file {filename}")
 
     create_environment_file(
-        filename=args.setup,
-        output_file=args.output,
+        sources=args.sources,
+        output=args.output,
         channels=args.channels,
         extras=args.extras,
         pip=args.pip,
+        remove=args.remove,
+        additional_requirements=args.additional_requirements,
         include_build_system=args.build_system,
     )
 

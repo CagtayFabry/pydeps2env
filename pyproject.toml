@@ -57,3 +57,9 @@ find = { exclude = [
 
 [tool.setuptools_scm]
 write_to = "pydeps2env/_version.py"
+
+[tool.pytest.ini_options]
+addopts = "--tb=short --color=yes -rsw --cov=pydeps2env"
+testpaths = [
+  "test",
+]
