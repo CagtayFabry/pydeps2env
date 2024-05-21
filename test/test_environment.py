@@ -1,5 +1,5 @@
 import pytest
-from pydeps2env import Environment, create_environment
+from pydeps2env import Environment, create_environment, create_from_definition
 
 _inputs = [
     "./test/pyproject.toml[test]",
@@ -55,3 +55,7 @@ def test_multiple_sources():
     conda, pip = env._get_dependencies()
     assert "pydeps2env@ git+https://github.com/CagtayFabry/pydeps2env.git" in pip
     assert "testproject@ file:/..//test_package" in pip
+
+
+def test_definition():
+    create_from_definition("./test/definition.yaml")

@@ -83,6 +83,7 @@ class Environment:
     build_system: dict[str, Requirement] = field(default_factory=dict, init=False)
 
     def __post_init__(self, extra_requirements):
+        print(self.filename)
         # cleanup duplicates etc.
         self.extras = set(self.extras)
         self.channels = list(dict.fromkeys(self.channels))
