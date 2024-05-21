@@ -7,6 +7,7 @@ inputs:
   files:
     description: >-
       Specify the location of the dependencies files to parse. (defaults to 'pyproject.toml')
+      Separate a list of multiple source files by spaces (e.g. 'pyproject.toml[test] requirements.txt').
     required: true
     default: pyproject.toml
   output:
@@ -16,25 +17,27 @@ inputs:
     default: environment.yml
   channels:
     description: >-
-      List the conda channels to include in the environment file. (defaults to 'defaults')
+      List the conda channels to include in the environment file. (defaults to 'conda-forge')
       Separate a list of multiple channels by spaces (e.g. 'conda-forge defaults').
     required: true
-    default: defaults
+    default: conda-forge
   extras:
     description: >-
-      Specify one or more optional [extras_require] sections to add to the environment
-      (e.g. 'test' to include package that you would normally install with 'pip install pkg[test]')
+      Specify one or more optional [extras_require] sections to add to all source files (s.a.).
+      (e.g. 'test' to include package that you would normally install with 'pip install pkg[test]').
+      Note that for individual sources in 'files', the '[extra]' syntax is also possible.
     required: false
   build_system:
     description: >-
-      if set to 'include' the dependencies listed under [build-system] or [options]:setup_requires will be added to the environment
-      (default is 'omit' so no setup dependencies will be installed)
+      if set to 'include' the dependencies listed under [build-system] (for 'pyproject.toml') or [options]:setup_requires (for 'setup.cfg') will be added to the environment
+      (default is 'omit' so no build system dependencies will be installed)
     required: false
     default: omit
   pip:
     description: >-
       List of packages to install via pip instead of conda.
       The dependencies will be listet under the pip section in the environment file.
+      If a dependency is listed with its URN, it will always be installed via pip (e.g. 'pydeps2env @ git+https://github.com/CagtayFabry/pydeps2env')
     required: false
 runs:
   using: composite

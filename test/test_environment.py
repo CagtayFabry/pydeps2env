@@ -1,11 +1,12 @@
 import pytest
-from pydeps2env import Environment
+from pydeps2env import Environment, create_environment
 
 _inputs = [
     "./test/pyproject.toml[test]",
     "./test/setup.cfg[test]",
     "./test/requirements.txt",
     "./test/environment.yaml",
+    "./test/local.yaml",
     "https://raw.githubusercontent.com/BAMWelDX/weldx/master/pyproject.toml[test]",
     "https://github.com/BAMWelDX/weldx/blob/master/pyproject.toml[test]",
     "https://raw.githubusercontent.com/BAMWelDX/weldx/v0.3.2/setup.cfg[test]",
@@ -35,3 +36,17 @@ class TestEnvironment:
             assert (
                 "pydeps2env@ git+https://github.com/CagtayFabry/pydeps2env.git" in pip
             )
+
+
+def test_multiple_sources():
+    env = create_environment(_inputs, extras=["test"], pip=["urllib3", "pandas"])
+
+    for req in ["python", "pydeps2env", "testproject", "urllib3", "pytest"]:
+        assert req in env.requirements
+
+    for req in ["testproject", "pydeps2env", "requests", "pandas"]:
+        assert req in env.pip_packages
+
+    conda, pip = env._get_dependencies()
+    assert "pydeps2env@ git+https://github.com/CagtayFabry/pydeps2env.git" in pip
+    assert "testproject@ file:/..//test_package" in pip

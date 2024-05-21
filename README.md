@@ -1,7 +1,7 @@
 # pydeps2env
 
 An easy way to create conda environment files from you python project dependencies.  
-Creates a conda `environment.yml` file from python package dependencies listed in a `pyproject.toml` or `setup.cfg` file.
+Creates a conda `environment.yml` file from python package dependencies listed in on or multiple different source formats like `pyproject.toml`, `setup.cfg`, `environment.yaml` or `requirements.txt` files.
 
 The project contains
 - GitHub action
@@ -42,7 +42,7 @@ test = ["pytest"]
 pip_only = ["bidict"]
 ```
 
-The default parameters will output this sorted `environment.yml` (note that the `python` dependency will always be the first item on the list):
+The default parameters will output this sorted `environment.yml` (note that the `python` dependency specification will always be the first item on the list):
 
 ```yaml
 channels:
@@ -74,13 +74,33 @@ dependencies:
     - bidict
 ```
 
-## configuration options
+## basic usage (python)
+
+Create an `Environment` using Python and export it to an `environment.yaml` file.
+
+```python
+from pydeps2env import Environment
+
+env = Environment("./test/pyproject.toml[doc]")
+env.export("my_environment.yaml")
+```
+
+## basic usage (command line)
+
+Combine multiple source files into a single environment file (including build dependencies).
+Install pandas using `pip`.
+
+```bash
+pydeps2env ./test/setup.cfg ./test/pyproject.toml[doc] ./test/environment.yaml ./test/requirements.txt -o output.yaml -c defaults --extras test -b include --pip pandas
+```
+
+## configuration options (GitHub action)
 
 To customize the output the input options are available to the action:
 
 ### files
 
-Specify the location of the `'setup.cfg'` or `'pyproject.toml'` files to parse. (defaults to `'pyproject.toml'`)
+Specify the location of the dependencies files to parse. (defaults to 'pyproject.toml')
 Multiple files can be listed. This will result in a combined environment file.
 
 ### output:
@@ -105,7 +125,8 @@ is `'omit'` so no setup dependencies will be installed).
 
 ### pip
 List of packages to install via `pip` instead of `conda`.
-The dependencies will be listet under the `pip:` section in the environment file.
+The dependencies will be listed under the `pip:` section in the environment file.
+If a dependency is listed with its URN, it will always be installed via pip (e.g. `pydeps2env @ git+https://github.com/CagtayFabry/pydeps2env`)
 
 ## example
 
