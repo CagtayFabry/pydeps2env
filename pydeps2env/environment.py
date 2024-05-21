@@ -237,7 +237,7 @@ class Environment:
             if (
                 not isinstance(r, Requirement) or r.name in _pip_packages
             ) and r.name not in remove:
-                pip.append(str(r) if not r.url else r.url)
+                pip.append(str(r))
         pip.sort(key=str.lower)
 
         return deps, pip
