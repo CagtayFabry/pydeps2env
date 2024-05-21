@@ -116,8 +116,8 @@ def main():
             raise FileNotFoundError(f"Could not find file {filename}")
 
     create_environment_file(
-        filename=args.sources,
-        output_file=args.output,
+        sources=args.sources,
+        output=args.output,
         channels=args.channels,
         extras=args.extras,
         pip=args.pip,
