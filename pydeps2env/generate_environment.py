@@ -54,7 +54,7 @@ def create_environment_file(
 
     env = create_environment(
         sources=sources,
-        requirements=additional_requirements,
+        additional_requirements=additional_requirements,
         channels=channels,
         extras=extras,
         pip=pip,
