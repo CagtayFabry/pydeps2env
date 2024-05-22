@@ -13,7 +13,7 @@ sources:
 - ./test/local.yaml
 - ./test/pyproject.toml[doc]
 - ./test/requirements.txt
-- https://github.com/CagtayFabry/pydeps2env/blob/custom_deps/pyproject.toml
+- https://github.com/CagtayFabry/pydeps2env/blob/main/pyproject.toml
 # extras to apply to all sources and packages
 extras:
 - test
