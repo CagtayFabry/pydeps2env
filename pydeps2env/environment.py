@@ -15,6 +15,7 @@ if sys.version_info < (3, 11):
 else:
     import tomllib
 
+from .helpers import extract_url_user_auth, guess_suffix_from_url
 
 def clean_list(item: list, sort: bool = True) -> list:
     """Remove duplicate entries from a list."""
@@ -118,22 +119,35 @@ class Environment:
             self.filename, extras = split_extras(self.filename)
             self.extras |= set(extras)
 
-        # store suffix for later parsing
-        self._suffix = Path(self.filename).suffix
-
         # read file contents into bytes
         _filename = self.filename
         if isinstance(_filename, str) and _filename.startswith("http"):
             import urllib.request
 
+            _token = None
+
+            # site specific url parsing
             if "/github.com/" in _filename:
                 _filename = _filename.replace(
                     "/github.com/", "/raw.githubusercontent.com/"
                 )
                 _filename = _filename.replace("/blob/", "/")
-            with urllib.request.urlopen(_filename) as f:
+            elif "git.bam.de" in _filename or "gitlab.com" in _filename:
+                _filename, _, _token = extract_url_user_auth(_filename)
+
+            req = urllib.request.Request(_filename)
+            if _token:
+                req.add_header("PRIVATE-TOKEN", _token)
+
+            # store suffix for later parsing
+            self._suffix = guess_suffix_from_url(_filename)
+
+            with urllib.request.urlopen(req) as f:
                 _contents: bytes = f.read()  # read raw content into bytes
         else:
+            # store suffix for later parsing
+            self._suffix = Path(self.filename).suffix
+
             with open(_filename, "rb") as f:
                 _contents: bytes = f.read()
 
