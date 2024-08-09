@@ -17,6 +17,7 @@ else:
 
 from .helpers import extract_url_user_auth, guess_suffix_from_url
 
+
 def clean_list(item: list, sort: bool = True) -> list:
     """Remove duplicate entries from a list."""
     pass
