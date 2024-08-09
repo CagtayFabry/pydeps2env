@@ -110,7 +110,6 @@ class Environment:
     build_system: dict[str, Requirement] = field(default_factory=dict, init=False)
 
     def __post_init__(self, extra_requirements):
-        print(self.filename)
         # cleanup duplicates etc.
         self.extras = set(self.extras)
         self.channels = list(dict.fromkeys(self.channels))
@@ -145,36 +144,34 @@ class Environment:
             self.filename, extras = split_extras(self.filename)
             self.extras |= set(extras)
 
-        # read file contents into bytes
-        _filename = self.filename
-        if isinstance(_filename, str) and _filename.startswith("http"):
+        # get file contents from web url or local file
+        if isinstance(self.filename, str) and self.filename.startswith("http"):
             import urllib.request
 
+            url = self.filename
             _token = None
 
             # site specific url parsing
-            if "/github.com/" in _filename:
-                _filename = _filename.replace(
-                    "/github.com/", "/raw.githubusercontent.com/"
-                )
-                _filename = _filename.replace("/blob/", "/")
-            elif "git.bam.de" in _filename or "gitlab.com" in _filename:
-                _filename, _, _token = extract_url_user_auth(_filename)
+            if "/github.com/" in url:
+                url = url.replace("/github.com/", "/raw.githubusercontent.com/")
+                url = url.replace("/blob/", "/")
+            elif "git.bam.de" in url or "gitlab.com" in url:
+                url, _, _token = extract_url_user_auth(url)
 
-            req = urllib.request.Request(_filename)
+            req = urllib.request.Request(url)
             if _token:
                 req.add_header("PRIVATE-TOKEN", _token)
 
             # store suffix for later parsing
-            self._suffix = guess_suffix_from_url(_filename)
+            self._suffix = guess_suffix_from_url(url)
 
             with urllib.request.urlopen(req) as f:
                 _contents: bytes = f.read()  # read raw content into bytes
-        else:
+        else:  # local file
             # store suffix for later parsing
             self._suffix = Path(self.filename).suffix
 
-            with open(_filename, "rb") as f:
+            with open(self.filename, "rb") as f:
                 _contents: bytes = f.read()
 
         if self._suffix == ".toml":
