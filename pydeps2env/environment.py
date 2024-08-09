@@ -15,6 +15,7 @@ if sys.version_info < (3, 11):
 else:
     import tomllib
 
+
 def clean_list(item: list, sort: bool = True) -> list:
     """Remove duplicate entries from a list."""
     pass
@@ -60,7 +61,7 @@ def add_requirement(
 
 def extract_url_user_auth(url) -> tuple[str, str, str]:
     """Extract basic url, user and authentication from url scheme.
-    
+
     Returns
     -------
     tuple
@@ -68,11 +69,16 @@ def extract_url_user_auth(url) -> tuple[str, str, str]:
         and username and password if supplied.
     """
     import urllib.parse
-    
+
     split_results = urllib.parse.urlsplit(url=url)
     components = [*split_results]
-    components[1] = components[1].split("@")[-1] # remove user:auth info
-    return urllib.parse.urlunsplit(components), split_results.username, split_results.password
+    components[1] = components[1].split("@")[-1]  # remove user:auth info
+    return (
+        urllib.parse.urlunsplit(components),
+        split_results.username,
+        split_results.password,
+    )
+
 
 def guess_suffix_from_url(url) -> str:
     """Try to extract filename suffix from url."""
