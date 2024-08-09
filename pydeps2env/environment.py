@@ -59,6 +59,33 @@ def add_requirement(
         raise ValueError(f"Unknown `mode` for add_requirement: {mode}")
 
 
+def extract_url_user_auth(url) -> tuple[str, str, str]:
+    """Extract basic url, user and authentication from url scheme.
+
+    Returns
+    -------
+    tuple
+        Tuple consisting of the url with authentication stripped
+        and username and password if supplied.
+    """
+    import urllib.parse
+
+    split_results = urllib.parse.urlsplit(url=url)
+    components = [*split_results]
+    components[1] = components[1].split("@")[-1]  # remove user:auth info
+    return (
+        urllib.parse.urlunsplit(components),
+        split_results.username,
+        split_results.password,
+    )
+
+
+def guess_suffix_from_url(url) -> str:
+    """Try to extract filename suffix from url."""
+
+    return "." + url.split(".")[-1].split("/")[0]
+
+
 def combine_requirements(
     req1: dict[str, Requirement], req2: dict[str, Requirement]
 ) -> dict[str, Requirement]:
@@ -83,7 +110,6 @@ class Environment:
     build_system: dict[str, Requirement] = field(default_factory=dict, init=False)
 
     def __post_init__(self, extra_requirements):
-        print(self.filename)
         # cleanup duplicates etc.
         self.extras = set(self.extras)
         self.channels = list(dict.fromkeys(self.channels))
@@ -118,23 +144,34 @@ class Environment:
             self.filename, extras = split_extras(self.filename)
             self.extras |= set(extras)
 
-        # store suffix for later parsing
-        self._suffix = Path(self.filename).suffix
-
-        # read file contents into bytes
-        _filename = self.filename
-        if isinstance(_filename, str) and _filename.startswith("http"):
+        # get file contents from web url or local file
+        if isinstance(self.filename, str) and self.filename.startswith("http"):
             import urllib.request
 
-            if "/github.com/" in _filename:
-                _filename = _filename.replace(
-                    "/github.com/", "/raw.githubusercontent.com/"
-                )
-                _filename = _filename.replace("/blob/", "/")
-            with urllib.request.urlopen(_filename) as f:
+            url = self.filename
+            _token = None
+
+            # site specific url parsing
+            if "/github.com/" in url:
+                url = url.replace("/github.com/", "/raw.githubusercontent.com/")
+                url = url.replace("/blob/", "/")
+            elif "git.bam.de" in url or "gitlab.com" in url:
+                url, _, _token = extract_url_user_auth(url)
+
+            req = urllib.request.Request(url)
+            if _token:
+                req.add_header("PRIVATE-TOKEN", _token)
+
+            # store suffix for later parsing
+            self._suffix = guess_suffix_from_url(url)
+
+            with urllib.request.urlopen(req) as f:
                 _contents: bytes = f.read()  # read raw content into bytes
-        else:
-            with open(_filename, "rb") as f:
+        else:  # local file
+            # store suffix for later parsing
+            self._suffix = Path(self.filename).suffix
+
+            with open(self.filename, "rb") as f:
                 _contents: bytes = f.read()
 
         if self._suffix == ".toml":
