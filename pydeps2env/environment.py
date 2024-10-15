@@ -15,6 +15,12 @@ if sys.version_info < (3, 11):
 else:
     import tomllib
 
+"""This mapping holds name mappings from pip to conda packages."""
+pip_to_conda_mapping = {
+    "setuptools-scm" : "setuptools_scm",
+    "weldx-widgets" : "weldx_widgets",
+}
+
 
 def clean_list(item: list, sort: bool = True) -> list:
     """Remove duplicate entries from a list."""
@@ -43,9 +49,8 @@ def add_requirement(
 
     # A pip requirement can contain dashes in their name, we need to replace them to underscores.
     # https://docs.conda.io/projects/conda-build/en/latest/concepts/package-naming-conv.html#term-Package-name
-    if "-" in req.name:
-        # it seems safer to re-create the object here.
-        req = Requirement(req.name.replace("-", "_"))
+    if req.name in pip_to_conda_mapping.keys():
+        req.name = pip_to_conda_mapping[req.name]
 
     if req.name not in requirements:
         requirements[req.name] = req
