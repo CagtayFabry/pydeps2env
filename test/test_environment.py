@@ -78,6 +78,7 @@ def test_definition_offline():
             additional_requirements=["k3d"],
         )
 
+
 def test_extra_requirements_in_pip_req():
     """Ensure extras defined by pip requirements are also being handled."""
     env = create_environment(
