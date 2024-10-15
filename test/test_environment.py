@@ -86,4 +86,5 @@ def test_extra_requirements_in_pip_req():
         pip=["setuptools-scm[toml]"],
     )
     from packaging.requirements import Requirement
+
     assert Requirement("toml") in env.requirements
