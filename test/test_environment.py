@@ -71,7 +71,7 @@ def test_definition_offline():
         raise URLError
 
     with patch("urllib.request.urlretrieve", dummy):
-        env = create_environment(
+        create_environment(
             _inputs,
             extras=["test"],
             pip=["setuptools-scm", "weldx-widgets"],
