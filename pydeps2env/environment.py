@@ -23,13 +23,15 @@ def get_mapping():
     from importlib import resources
 
     from urllib.error import ContentTooShortError, URLError
+
     try:
         fn, response = request.urlretrieve(
-        "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json")
+            "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json"
+        )
     except (ContentTooShortError, URLError):
         fn = resources.files("pydeps2env") / "compressed_mapping.json"
 
-    with open(fn, 'r') as f:
+    with open(fn, "r") as f:
         data = json.load(f)
 
     pypi_2_conda = {v: k for k, v in data.items() if v is not None and v != k}
