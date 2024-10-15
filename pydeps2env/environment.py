@@ -22,13 +22,12 @@ def get_mapping():
     import urllib.request as request
     from importlib import resources
 
-    from urllib.error import ContentTooShortError, URLError
-
+    from urllib.error import ContentTooShortError, URLError, HTTPError
     try:
         fn, response = request.urlretrieve(
             "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json"
         )
-    except (ContentTooShortError, URLError):
+    except (ContentTooShortError, URLError, HTTPError):
         fn = resources.files("pydeps2env") / "compressed_mapping.json"
 
     with open(fn, "r") as f:
