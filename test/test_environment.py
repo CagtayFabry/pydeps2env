@@ -70,7 +70,7 @@ def test_definition_offline():
 
         raise URLError
 
-    with patch("urrllib.request.urlretrieve", dummy):
+    with patch("urllib.request.urlretrieve", dummy):
         env = create_environment(
             _inputs,
             extras=["test"],
@@ -85,4 +85,5 @@ def test_extra_requirements_in_pip_req():
         _inputs,
         pip=["setuptools-scm[toml]"],
     )
-    assert "toml" in env.requirements
+    from packaging.requirements import Requirement
+    assert Requirement("toml") in env.requirements
