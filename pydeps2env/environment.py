@@ -17,8 +17,8 @@ else:
 
 """This mapping holds name mappings from pip to conda packages."""
 pip_to_conda_mapping = {
-    "setuptools-scm" : "setuptools_scm",
-    "weldx-widgets" : "weldx_widgets",
+    "setuptools-scm": "setuptools_scm",
+    "weldx-widgets": "weldx_widgets",
 }
 
 
