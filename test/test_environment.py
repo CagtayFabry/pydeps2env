@@ -85,4 +85,4 @@ def test_extra_requirements_in_pip_req():
         _inputs,
         pip=["setuptools-scm[toml]"],
     )
-    assert "toml" in env.requirements.keys()
+    assert "toml" in env.build_system.keys()
