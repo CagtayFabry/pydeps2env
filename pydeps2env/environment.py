@@ -23,6 +23,7 @@ def get_mapping():
     from importlib import resources
 
     from urllib.error import ContentTooShortError, URLError, HTTPError
+
     try:
         fn, response = request.urlretrieve(
             "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json"

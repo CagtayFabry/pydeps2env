@@ -64,13 +64,16 @@ def test_definition():
 def test_definition_offline():
     """Ensure we can map pypi to conda pkgs, even if we cannot download a current mapping."""
     from unittest.mock import patch
+
     def dummy():
         from urllib.error import URLError
+
         raise URLError
+
     with patch("urrllib.request.urlretrieve", dummy):
         create_environment(
-        _inputs,
-        extras=["test"],
-        pip=["setuptools-scm", "weldx-widgets"],
-        additional_requirements=["k3d"],
-    )
+            _inputs,
+            extras=["test"],
+            pip=["setuptools-scm", "weldx-widgets"],
+            additional_requirements=["k3d"],
+        )
