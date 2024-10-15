@@ -34,7 +34,7 @@ jobs:
         extras: test
         build_system: include
         pip: bidict
-    - uses: mamba-org/setup-micromamba@v1.8.0
+    - uses: mamba-org/setup-micromamba@v2
       if: runner.os == 'Linux'
       with:
         environment-file: ./environment_test.yml

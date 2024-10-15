@@ -16,9 +16,30 @@ else:
     import tomllib
 
 
-def clean_list(item: list, sort: bool = True) -> list:
-    """Remove duplicate entries from a list."""
-    pass
+def get_mapping():
+    """Downloads the mapping conda->pypi names from Parselmouth and returns the reverse mapping."""
+    import json
+    import urllib.request as request
+    from importlib import resources
+
+    from urllib.error import ContentTooShortError, URLError, HTTPError
+
+    try:
+        fn, response = request.urlretrieve(
+            "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json"
+        )
+    except (ContentTooShortError, URLError, HTTPError):
+        fn = resources.files("pydeps2env") / "compressed_mapping.json"
+
+    with open(fn, "r") as f:
+        data = json.load(f)
+
+    pypi_2_conda = {v: k for k, v in data.items() if v is not None and v != k}
+    return pypi_2_conda
+
+
+"""This mapping holds name mappings from pypi to conda packages."""
+pypi_to_conda_mapping = get_mapping()
 
 
 def split_extras(filename: str) -> tuple[str, set]:
@@ -40,6 +61,19 @@ def add_requirement(
 
     if not isinstance(req, Requirement):
         req = Requirement(req)
+
+    # A pip requirement can contain dashes in their name, we need to replace them to underscores.
+    # https://docs.conda.io/projects/conda-build/en/latest/concepts/package-naming-conv.html#term-Package-name
+    if req.name in pypi_to_conda_mapping.keys():
+        old_name = req.name
+        req.name = pypi_to_conda_mapping[req.name]
+        assert req.name != old_name
+        requirements.pop(old_name, None)
+
+    if req.extras:  # expand extras
+        for r in req.extras:
+            add_requirement(r, requirements)
+        req.extras = {}
 
     if req.name not in requirements:
         requirements[req.name] = req
