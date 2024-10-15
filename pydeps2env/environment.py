@@ -50,7 +50,10 @@ def add_requirement(
     # A pip requirement can contain dashes in their name, we need to replace them to underscores.
     # https://docs.conda.io/projects/conda-build/en/latest/concepts/package-naming-conv.html#term-Package-name
     if req.name in pip_to_conda_mapping.keys():
+        old_name = req.name
         req.name = pip_to_conda_mapping[req.name]
+        assert req.name != old_name
+        del requirements[old_name]
 
     if req.name not in requirements:
         requirements[req.name] = req
