@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field, InitVar
+from urllib.error import ContentTooShortError
+
 from packaging.requirements import Requirement
 from pathlib import Path
 from collections import defaultdict
@@ -20,10 +22,16 @@ def get_mapping():
     """Downloads the mapping conda->pypi names from Parselmouth and returns the reverse mapping."""
     import json
     import urllib.request as request
-    fn_tmp, response = request.urlretrieve(
-        "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json")
+    from importlib import resources
 
-    with open(fn_tmp, 'r') as f:
+    from urllib.error import ContentTooShortError, URLError
+    try:
+        fn, response = request.urlretrieve(
+        "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json")
+    except (ContentTooShortError, URLError):
+        fn = resources.files("pydeps2env") / "compressed_mapping.json"
+    print(fn)
+    with open(fn, 'r') as f:
         data = json.load(f)
 
     pypi_2_conda = {v: k for k, v in data.items() if v is not None}
