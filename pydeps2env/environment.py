@@ -53,7 +53,7 @@ def add_requirement(
         old_name = req.name
         req.name = pip_to_conda_mapping[req.name]
         assert req.name != old_name
-        del requirements[old_name]
+        requirements.pop(old_name, None)
 
     if req.name not in requirements:
         requirements[req.name] = req
