@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field, InitVar
-from urllib.error import ContentTooShortError
 
 from packaging.requirements import Requirement
 from pathlib import Path
@@ -30,16 +29,16 @@ def get_mapping():
         "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json")
     except (ContentTooShortError, URLError):
         fn = resources.files("pydeps2env") / "compressed_mapping.json"
-    print(fn)
+
     with open(fn, 'r') as f:
         data = json.load(f)
 
-    pypi_2_conda = {v: k for k, v in data.items() if v is not None}
+    pypi_2_conda = {v: k for k, v in data.items() if v is not None and v != k}
     return pypi_2_conda
 
 
 """This mapping holds name mappings from pypi to conda packages."""
-pip_to_conda_mapping = get_mapping()
+pypi_to_conda_mapping = get_mapping()
 
 
 def split_extras(filename: str) -> tuple[str, set]:
@@ -64,9 +63,9 @@ def add_requirement(
 
     # A pip requirement can contain dashes in their name, we need to replace them to underscores.
     # https://docs.conda.io/projects/conda-build/en/latest/concepts/package-naming-conv.html#term-Package-name
-    if req.name in pip_to_conda_mapping.keys():
+    if req.name in pypi_to_conda_mapping.keys():
         old_name = req.name
-        req.name = pip_to_conda_mapping[req.name]
+        req.name = pypi_to_conda_mapping[req.name]
         assert req.name != old_name
         requirements.pop(old_name, None)
 
