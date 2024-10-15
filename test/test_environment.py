@@ -71,9 +71,17 @@ def test_definition_offline():
         raise URLError
 
     with patch("urrllib.request.urlretrieve", dummy):
-        create_environment(
+        env = create_environment(
             _inputs,
             extras=["test"],
             pip=["setuptools-scm", "weldx-widgets"],
             additional_requirements=["k3d"],
         )
+
+def test_extra_requirements_in_pip_req():
+    """Ensure extras defined by pip requirements are also being handled."""
+    env = create_environment(
+        _inputs,
+        pip=["setuptools-scm[toml]"],
+    )
+    assert "toml" in env.requirements
