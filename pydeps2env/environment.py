@@ -44,7 +44,8 @@ def add_requirement(
     # A pip requirement can contain dashes in their name, we need to replace them to underscores.
     # https://docs.conda.io/projects/conda-build/en/latest/concepts/package-naming-conv.html#term-Package-name
     if "-" in req.name:
-        req.name = req.replace("-", "_")
+        # it seems safer to re-create the object here.
+        req = Requirement(req.name.replace("-", "_"))
 
     if req.name not in requirements:
         requirements[req.name] = req
