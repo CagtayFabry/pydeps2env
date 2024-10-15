@@ -20,10 +20,12 @@ def get_mapping():
     """Downloads the mapping conda->pypi names from Parselmouth and returns the reverse mapping."""
     import json
     import urllib.request as request
-    fn_tmp, response = request.urlretrieve(
-        "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json")
 
-    with open(fn_tmp, 'r') as f:
+    fn_tmp, response = request.urlretrieve(
+        "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json"
+    )
+
+    with open(fn_tmp, "r") as f:
         data = json.load(f)
 
     pypi_2_conda = {v: k for k, v in data.items() if v is not None}
@@ -45,9 +47,9 @@ def split_extras(filename: str) -> tuple[str, set]:
 
 
 def add_requirement(
-        req: Requirement | str,
-        requirements: dict[str, Requirement],
-        mode: str = "combine",
+    req: Requirement | str,
+    requirements: dict[str, Requirement],
+    mode: str = "combine",
 ):
     """Add a requirement to existing requirement specification (in place)."""
 
@@ -113,7 +115,7 @@ def guess_suffix_from_url(url) -> str:
 
 
 def combine_requirements(
-        req1: dict[str, Requirement], req2: dict[str, Requirement]
+    req1: dict[str, Requirement], req2: dict[str, Requirement]
 ) -> dict[str, Requirement]:
     """Combine multiple requirement listings."""
     req1 = req1.copy()
@@ -267,9 +269,9 @@ class Environment:
         self.add_requirements([dep.strip() for dep in deps])
 
     def _get_dependencies(
-            self,
-            include_build_system: bool = True,
-            remove: list[str] = None,
+        self,
+        include_build_system: bool = True,
+        remove: list[str] = None,
     ) -> tuple[list[str], list[str]]:
         """Get the default conda environment entries."""
 
@@ -289,8 +291,8 @@ class Environment:
             str(r)
             for r in reqs.values()
             if not r.url  # install via pip
-               and r.name not in _pip_packages
-               and r.name not in remove
+            and r.name not in _pip_packages
+            and r.name not in remove
         ]
         deps.sort(key=str.lower)
         if _python:
@@ -308,11 +310,11 @@ class Environment:
         return deps, pip
 
     def export(
-            self,
-            outfile: str | Path = "environment.yaml",
-            include_build_system: bool = True,
-            remove: list[str] = None,
-            name: str = None,
+        self,
+        outfile: str | Path = "environment.yaml",
+        include_build_system: bool = True,
+        remove: list[str] = None,
+        name: str = None,
     ):
         """Export the environment to a yaml or txt file."""
         if remove is None:
