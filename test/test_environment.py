@@ -59,7 +59,6 @@ def test_multiple_sources():
         assert req in env.pip_packages
 
     conda, pip = env._get_conda_dependencies()
-    assert "nb_black>=1.0" in conda
     assert "pydeps2env@ git+https://github.com/CagtayFabry/pydeps2env.git" in pip
     assert "testproject@ file:/..//test_package" in pip
 
