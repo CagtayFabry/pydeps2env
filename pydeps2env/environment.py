@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+
 from dataclasses import dataclass, field, InitVar
 from packaging.requirements import Requirement
 from pathlib import Path
@@ -114,7 +116,8 @@ def combine_requirements(
     req1: dict[str, Requirement], req2: dict[str, Requirement]
 ) -> dict[str, Requirement]:
     """Combine multiple requirement listings."""
-    req1 = req1.copy()
+    req1 = copy.deepcopy(req1)
+    req2 = copy.deepcopy(req2)
     for r in req2.values():
         add_requirement(r, req1, mode="combine")
 
@@ -274,7 +277,7 @@ class Environment:
         if remove is None:
             remove = []
 
-        reqs = self.requirements.copy()
+        reqs = copy.deepcopy(self.requirements)
         if include_build_system:
             reqs = combine_requirements(reqs, self.build_system)
 
@@ -290,6 +293,8 @@ class Environment:
             and r.name not in _pip_packages
             and r.name not in remove
         }
+
+        print(conda_reqs)
 
         for req_key in conda_reqs.keys():
             if conda_reqs[req_key].name in pypi_to_conda_mapping.keys():
@@ -336,7 +341,7 @@ class Environment:
         if remove is None:
             remove = []
 
-        pip_reqs = self.requirements.copy()
+        pip_reqs = copy.deepcopy(self.requirements)
         if include_build_system:
             pip_reqs = combine_requirements(pip_reqs, self.build_system)
 
@@ -392,7 +397,7 @@ class Environment:
         conda_env = {
             "name": name,
             "channels": self.channels,
-            "dependencies": deps.copy(),
+            "dependencies": copy.deepcopy(deps),
         }
         if pip:
             if "pip" not in self.requirements:
