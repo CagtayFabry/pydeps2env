@@ -32,10 +32,16 @@ class TestEnvironment:
             assert "pydeps2env" in env.requirements
             assert "pydeps2env" in env.pip_packages
 
-            conda, pip = env._get_dependencies()
+            conda, pip = env._get_conda_dependencies(include_build_system=True)
+            # test change to conda pkg name and remove extras
+            assert "setuptools_scm" in conda
             assert (
                 "pydeps2env@ git+https://github.com/CagtayFabry/pydeps2env.git" in pip
             )
+
+            pip_txt = env._get_pip_dependencies(include_build_system=True)
+            # include extras specifier in pip format
+            assert "setuptools-scm[toml]" in pip_txt
 
 
 def test_multiple_sources():
@@ -52,10 +58,28 @@ def test_multiple_sources():
     for req in ["testproject", "pydeps2env", "requests", "pandas"]:
         assert req in env.pip_packages
 
-    conda, pip = env._get_dependencies()
+    conda, pip = env._get_conda_dependencies()
     assert "pydeps2env@ git+https://github.com/CagtayFabry/pydeps2env.git" in pip
     assert "testproject@ file:/..//test_package" in pip
 
 
 def test_definition():
     create_from_definition("./test/definition.yaml")
+
+
+def test_definition_offline():
+    """Ensure we can map pypi to conda pkgs, even if we cannot download a current mapping."""
+    from unittest.mock import patch
+
+    def dummy():
+        from urllib.error import URLError
+
+        raise URLError
+
+    with patch("urllib.request.urlretrieve", dummy):
+        create_environment(
+            _inputs,
+            extras=["test"],
+            pip=["setuptools-scm", "weldx-widgets"],
+            additional_requirements=["k3d"],
+        )

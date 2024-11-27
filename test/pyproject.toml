@@ -2,7 +2,7 @@
 build-backend = "setuptools.build_meta"
 requires = [
   "setuptools>=40.9",
-  "setuptools-scm",
+  "setuptools-scm[toml]",
   "wheel",
 ]
 
@@ -30,6 +30,3 @@ optional-dependencies.pip_only = [
 optional-dependencies.test = [
   "pytest",
 ]
-urls.author = "Cagtay Fabry <cagtay.fabry@bam.de>"
-urls.author_email = "cagtay.fabry@bam.de"
-urls.home_page = "https://github.com/CagtayFabry/pydeps2env"
