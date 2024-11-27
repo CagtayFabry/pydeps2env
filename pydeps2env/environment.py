@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+
 from dataclasses import dataclass, field, InitVar
 from packaging.requirements import Requirement
 from pathlib import Path
@@ -16,9 +18,33 @@ else:
     import tomllib
 
 
-def clean_list(item: list, sort: bool = True) -> list:
-    """Remove duplicate entries from a list."""
-    pass
+def get_mapping():
+    """Downloads the mapping conda->pypi names from Parselmouth and returns the reverse mapping."""
+    import json
+    import urllib.request as request
+    from importlib import resources
+
+    from urllib.error import ContentTooShortError, URLError, HTTPError
+
+    try:
+        fn, response = request.urlretrieve(
+            "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json"
+        )
+    except (ContentTooShortError, URLError, HTTPError):
+        fn = resources.files("pydeps2env") / "compressed_mapping.json"
+
+    with open(fn, "r") as f:
+        data = json.load(f)
+
+    pypi_2_conda = {v: k for k, v in data.items() if v is not None and v != k}
+    return pypi_2_conda
+
+
+# A pip requirement can contain dashes in their name, we need to replace them to underscores.
+# https://docs.conda.io/projects/conda-build/en/latest/concepts/package-naming-conv.html#term-Package-name
+"""This mapping holds name mappings from pypi to conda packages."""
+pypi_to_conda_mapping = get_mapping()
+conda_to_pypi_mapping = {v: k for k, v in pypi_to_conda_mapping.items() if v}
 
 
 def split_extras(filename: str) -> tuple[str, set]:
@@ -90,7 +116,8 @@ def combine_requirements(
     req1: dict[str, Requirement], req2: dict[str, Requirement]
 ) -> dict[str, Requirement]:
     """Combine multiple requirement listings."""
-    req1 = req1.copy()
+    req1 = copy.deepcopy(req1)
+    req2 = copy.deepcopy(req2)
     for r in req2.values():
         add_requirement(r, req1, mode="combine")
 
@@ -240,7 +267,7 @@ class Environment:
 
         self.add_requirements([dep.strip() for dep in deps])
 
-    def _get_dependencies(
+    def _get_conda_dependencies(
         self,
         include_build_system: bool = True,
         remove: list[str] = None,
@@ -250,7 +277,7 @@ class Environment:
         if remove is None:
             remove = []
 
-        reqs = self.requirements.copy()
+        reqs = copy.deepcopy(self.requirements)
         if include_build_system:
             reqs = combine_requirements(reqs, self.build_system)
 
@@ -259,20 +286,39 @@ class Environment:
         _pip_packages = self.pip_packages
         # _pip_packages |= {r.name for r in reqs.values() if r.url}
 
-        deps = [
-            str(r)
-            for r in reqs.values()
+        conda_reqs = {
+            k: r
+            for k, r in reqs.items()
             if not r.url  # install via pip
             and r.name not in _pip_packages
             and r.name not in remove
-        ]
+        }
+
+        for req_key in conda_reqs.keys():
+            if conda_reqs[req_key].name in pypi_to_conda_mapping.keys():
+                conda_reqs[req_key].name = pypi_to_conda_mapping[
+                    conda_reqs[req_key].name
+                ]
+                conda_reqs[req_key].extras = {}  # cannot handle extras in conda
+
+        deps = [str(r) for r in conda_reqs.values()]
         deps.sort(key=str.lower)
         if _python:
             deps = [str(_python)] + deps
 
+        pip_reqs = {
+            k: r
+            for k, r in reqs.items()
+            if (r.name in _pip_packages or r.url) and r.name not in remove
+        }
+
+        for req_key in pip_reqs.keys():
+            if pip_reqs[req_key].name in pypi_to_conda_mapping.keys():
+                pip_reqs[req_key].name = pypi_to_conda_mapping[pip_reqs[req_key].name]
+
         pip = [
             r
-            for r in reqs.values()
+            for r in pip_reqs.values()
             if (r.name in _pip_packages or r.url) and r.name not in remove
         ]
         # string formatting
@@ -281,25 +327,75 @@ class Environment:
 
         return deps, pip
 
+    def _get_pip_dependencies(
+        self,
+        include_build_system: bool = True,
+        remove: list[str] = None,
+    ) -> list:
+        """Generate a list of requirements for pip install.
+
+        This function should produce dependencies suitable for requirements.txt.
+        """
+        if remove is None:
+            remove = []
+
+        pip_reqs = copy.deepcopy(self.requirements)
+        if include_build_system:
+            pip_reqs = combine_requirements(pip_reqs, self.build_system)
+
+        _python = pip_reqs.pop("python", None)
+
+        for req_key in pip_reqs.keys():
+            if pip_reqs[req_key].name in conda_to_pypi_mapping.keys():
+                pip_reqs[req_key].name = conda_to_pypi_mapping[pip_reqs[req_key].name]
+
+        deps = [
+            str(r)
+            for k, r in pip_reqs.items()
+            if (r.name not in remove) and (k not in remove)
+        ]
+
+        deps.sort(key=str.lower)
+        if _python:
+            deps = [str(_python)] + deps
+
+        return deps
+
     def export(
         self,
         outfile: str | Path = "environment.yaml",
         include_build_system: bool = True,
         remove: list[str] = None,
         name: str = None,
-    ):
+    ) -> None:
         """Export the environment to a yaml or txt file."""
         if remove is None:
             remove = []
 
-        deps, pip = self._get_dependencies(
+        if outfile is not None:
+            p = Path(outfile)
+        else:
+            p = None
+
+        if p and p.suffix in [".txt"]:
+            deps = self._get_pip_dependencies(
+                include_build_system=include_build_system, remove=remove
+            )
+            with p.open("w") as outfile:
+                outfile.writelines("\n".join(deps))
+            return None
+        elif p and p.suffix not in [".yaml", ".yml"]:
+            msg = f"Unknown environment format `{p.suffix}`, generating conda yaml output."
+            warn(msg, stacklevel=2)
+
+        deps, pip = self._get_conda_dependencies(
             include_build_system=include_build_system, remove=remove
         )
 
         conda_env = {
             "name": name,
             "channels": self.channels,
-            "dependencies": deps.copy(),
+            "dependencies": copy.deepcopy(deps),
         }
         if pip:
             if "pip" not in self.requirements:
@@ -308,22 +404,11 @@ class Environment:
 
         conda_env = {k: v for k, v in conda_env.items() if v}
 
-        if outfile is None:
+        if p is None:
             return conda_env
 
-        p = Path(outfile)
-        if p.suffix in [".txt"]:
-            deps += pip
-            deps.sort(key=str.lower)
-            with open(p, "w") as outfile:
-                outfile.writelines("\n".join(deps))
-        else:
-            if p.suffix not in [".yaml", ".yml"]:
-                warn(
-                    f"Unknown environment format `{p.suffix}`, generating conda yaml output."
-                )
-            with open(p, "w") as outfile:
-                yaml.dump(conda_env, outfile, default_flow_style=False, sort_keys=False)
+        with open(p, "w") as outfile:
+            yaml.dump(conda_env, outfile, default_flow_style=False, sort_keys=False)
 
     def combine(self, other: Environment):
         """Merge other Environment requirements into this Environment."""
