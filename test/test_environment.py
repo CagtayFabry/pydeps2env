@@ -32,10 +32,16 @@ class TestEnvironment:
             assert "pydeps2env" in env.requirements
             assert "pydeps2env" in env.pip_packages
 
-            conda, pip = env._get_dependencies()
+            conda, pip = env._get_conda_dependencies(include_build_system=True)
+            # test change to conda pkg name and remove extras
+            assert "setuptools_scm" in conda
             assert (
                 "pydeps2env@ git+https://github.com/CagtayFabry/pydeps2env.git" in pip
             )
+
+            pip_txt = env._get_pip_dependencies(include_build_system=True)
+            # include extras specifier in pip format
+            assert "setuptools-scm[toml]" in pip_txt
 
 
 def test_multiple_sources():
@@ -52,7 +58,8 @@ def test_multiple_sources():
     for req in ["testproject", "pydeps2env", "requests", "pandas"]:
         assert req in env.pip_packages
 
-    conda, pip = env._get_dependencies()
+    conda, pip = env._get_conda_dependencies()
+    assert "nb_black>=1.0" in conda
     assert "pydeps2env@ git+https://github.com/CagtayFabry/pydeps2env.git" in pip
     assert "testproject@ file:/..//test_package" in pip
 
@@ -77,12 +84,3 @@ def test_definition_offline():
             pip=["setuptools-scm", "weldx-widgets"],
             additional_requirements=["k3d"],
         )
-
-
-def test_extra_requirements_in_pip_req():
-    """Ensure extras defined by pip requirements are also being handled."""
-    env = create_environment(
-        _inputs,
-        pip=["setuptools-scm[toml]"],
-    )
-    assert "toml" in env.build_system.keys()
