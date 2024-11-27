@@ -42,7 +42,7 @@ def get_mapping():
 # https://docs.conda.io/projects/conda-build/en/latest/concepts/package-naming-conv.html#term-Package-name
 """This mapping holds name mappings from pypi to conda packages."""
 pypi_to_conda_mapping = get_mapping()
-conda_to_pypi_mapping = {v:k for k,v in pypi_to_conda_mapping.items() if v}
+conda_to_pypi_mapping = {v: k for k, v in pypi_to_conda_mapping.items() if v}
 
 
 def split_extras(filename: str) -> tuple[str, set]:
@@ -284,8 +284,8 @@ class Environment:
         # _pip_packages |= {r.name for r in reqs.values() if r.url}
 
         conda_reqs = {
-            k:r
-            for k,r in reqs.items()
+            k: r
+            for k, r in reqs.items()
             if not r.url  # install via pip
             and r.name not in _pip_packages
             and r.name not in remove
@@ -293,20 +293,19 @@ class Environment:
 
         for req_key in conda_reqs.keys():
             if conda_reqs[req_key].name in pypi_to_conda_mapping.keys():
-                conda_reqs[req_key].name = pypi_to_conda_mapping[conda_reqs[req_key].name]
-                conda_reqs[req_key].extras = {} # cannot handle extras in conda
+                conda_reqs[req_key].name = pypi_to_conda_mapping[
+                    conda_reqs[req_key].name
+                ]
+                conda_reqs[req_key].extras = {}  # cannot handle extras in conda
 
-        deps = [
-            str(r)
-            for r in conda_reqs.values()
-        ]
+        deps = [str(r) for r in conda_reqs.values()]
         deps.sort(key=str.lower)
         if _python:
             deps = [str(_python)] + deps
 
         pip_reqs = {
-            k:r
-            for k,r in reqs.items()
+            k: r
+            for k, r in reqs.items()
             if (r.name in _pip_packages or r.url) and r.name not in remove
         }
 
@@ -326,12 +325,12 @@ class Environment:
         return deps, pip
 
     def _get_pip_dependencies(
-            self,
-            include_build_system: bool = True,
-            remove: list[str] = None,
-        ) -> list:
+        self,
+        include_build_system: bool = True,
+        remove: list[str] = None,
+    ) -> list:
         """Generate a list of requirements for pip install.
-        
+
         This function should produce dependencies suitable for requirements.txt.
         """
         if remove is None:
@@ -346,10 +345,10 @@ class Environment:
         for req_key in pip_reqs.keys():
             if pip_reqs[req_key].name in conda_to_pypi_mapping.keys():
                 pip_reqs[req_key].name = conda_to_pypi_mapping[pip_reqs[req_key].name]
-        
+
         deps = [
             str(r)
-            for k,r in pip_reqs.items()
+            for k, r in pip_reqs.items()
             if (r.name not in remove) and (k not in remove)
         ]
 
@@ -358,7 +357,6 @@ class Environment:
             deps = [str(_python)] + deps
 
         return deps
-
 
     def export(
         self,
@@ -375,16 +373,17 @@ class Environment:
             p = Path(outfile)
         else:
             p = None
-        
+
         if p and p.suffix in [".txt"]:
-            deps = self._get_pip_dependencies(include_build_system=include_build_system, remove=remove)
+            deps = self._get_pip_dependencies(
+                include_build_system=include_build_system, remove=remove
+            )
             with p.open("w") as outfile:
                 outfile.writelines("\n".join(deps))
             return None
         elif p and p.suffix not in [".yaml", ".yml"]:
             msg = f"Unknown environment format `{p.suffix}`, generating conda yaml output."
             warn(msg, stacklevel=2)
-                    
 
         deps, pip = self._get_conda_dependencies(
             include_build_system=include_build_system, remove=remove
