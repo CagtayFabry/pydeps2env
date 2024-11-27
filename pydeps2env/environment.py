@@ -294,8 +294,6 @@ class Environment:
             and r.name not in remove
         }
 
-        print(conda_reqs)
-
         for req_key in conda_reqs.keys():
             if conda_reqs[req_key].name in pypi_to_conda_mapping.keys():
                 conda_reqs[req_key].name = pypi_to_conda_mapping[

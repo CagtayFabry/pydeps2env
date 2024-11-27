@@ -40,7 +40,6 @@ class TestEnvironment:
             )
 
             pip_txt = env._get_pip_dependencies(include_build_system=True)
-            print(pip_txt)
             # include extras specifier in pip format
             assert "setuptools-scm[toml]" in pip_txt
 
