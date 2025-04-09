@@ -28,9 +28,9 @@ inputs:
       Note that for individual sources in 'files', the '[extra]' syntax is also possible.
     required: false
   additional_requirements:
-      description: >-
-        Additional requirement specifications to include in the environment.
-      required: false
+    description: >-
+      Additional requirement specifications to include in the environment.
+    required: false
   build_system:
     description: >-
       if set to 'include' the dependencies listed under [build-system] (for 'pyproject.toml') or [options]:setup_requires (for 'setup.cfg') will be added to the environment
