@@ -32,6 +32,7 @@ jobs:
         output: environment_test.yml
         channels: conda-forge defaults
         extras: test
+        additional_requirements: psutil pandas==1.5.1
         build_system: include
         pip: bidict
     - uses: mamba-org/setup-micromamba@v2
