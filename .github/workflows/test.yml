@@ -30,8 +30,9 @@ jobs:
       with:
         files: ./test/pyproject.toml[doc] ./test/setup.cfg[pip_only] ./test/environment.yaml ./test/requirements.txt
         output: environment_test.yml
-        channels: conda-forge defaults
+        channels: conda-forge
         extras: test
+        additional_requirements: psutil pandas==1.5.1
         build_system: include
         pip: bidict
     - uses: mamba-org/setup-micromamba@v2
@@ -57,4 +58,4 @@ jobs:
     - name: pip install package
       run: pip install .
     - name: test cmd script
-      run: pydeps2env ./test/setup.cfg ./test/pyproject.toml[doc] ./test/environment.yaml ./test/requirements.txt -o output.yaml -c defaults --extras test -b include --pip pandas
+      run: pydeps2env ./test/setup.cfg ./test/pyproject.toml[doc] ./test/environment.yaml ./test/requirements.txt -o output.yaml -c conda-forge --extras test -b include --pip pandas

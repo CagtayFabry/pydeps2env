@@ -27,6 +27,10 @@ inputs:
       (e.g. 'test' to include package that you would normally install with 'pip install pkg[test]').
       Note that for individual sources in 'files', the '[extra]' syntax is also possible.
     required: false
+  additional_requirements:
+    description: >-
+      Additional requirement specifications to include in the environment.
+    required: false
   build_system:
     description: >-
       if set to 'include' the dependencies listed under [build-system] (for 'pyproject.toml') or [options]:setup_requires (for 'setup.cfg') will be added to the environment
@@ -49,6 +53,7 @@ runs:
       --output ${{ inputs.output }}
       --channels ${{ inputs.channels }}
       --extras ${{ inputs.extras }}
+      --additional_requirements ${{ inputs.additional_requirements }}
       --build_system ${{ inputs.build_system }}
       --pip ${{ inputs.pip }}
     shell: bash

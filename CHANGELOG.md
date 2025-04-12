@@ -1,5 +1,14 @@
 # pydeps2env
 
+## v1.4.0
+
+### added
+
+- added `additional_requirements` option to github action [#77]
+
+### fixed
+
+- fixed conda package name conversion if package is listed to be pip-installed [#77]
 
 ## v1.3.0
 

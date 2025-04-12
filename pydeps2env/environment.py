@@ -313,6 +313,8 @@ class Environment:
         }
 
         for req_key in pip_reqs.keys():
+            if req_key in _pip_packages:  # no need to convert
+                continue
             if pip_reqs[req_key].name in pypi_to_conda_mapping.keys():
                 pip_reqs[req_key].name = pypi_to_conda_mapping[pip_reqs[req_key].name]
 
@@ -321,6 +323,7 @@ class Environment:
             for r in pip_reqs.values()
             if (r.name in _pip_packages or r.url) and r.name not in remove
         ]
+
         # string formatting
         pip = [str(r) if not r.url else f"{r.name}@ {r.url}" for r in pip]
         pip.sort(key=str.lower)
