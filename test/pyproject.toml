@@ -20,6 +20,7 @@ dependencies = [
   "numpy>=1.20",
   "pandas>=1",
   "pydeps2env @ git+https://github.com/CagtayFabry/pydeps2env.git",
+  "tomli; python_version<'3.11'",
 ]
 optional-dependencies.doc = [
   "sphinx",

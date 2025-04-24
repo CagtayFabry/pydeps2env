@@ -1,5 +1,17 @@
 # pydeps2env
 
+## v1.4.1
+
+### added
+
+- added experimental `editable` option [#80]
+
+### fixed
+
+- fixed pip markers in conda packages and add test case [#80]
+- fixed url not set for existing requirements [#80]
+- determine version at runtime [#80]
+
 ## v1.4.0
 
 ### added

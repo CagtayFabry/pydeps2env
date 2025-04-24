@@ -14,7 +14,12 @@ __all__ = [
     "create_from_definition",
 ]
 
+from importlib.metadata import PackageNotFoundError, version
+
 try:
-    from ._version import __version__
-except ModuleNotFoundError:
-    __version__ = ""
+    __version__ = version("pydeps2env")
+except PackageNotFoundError:
+    # package is not installed
+    pass
+finally:
+    del version, PackageNotFoundError

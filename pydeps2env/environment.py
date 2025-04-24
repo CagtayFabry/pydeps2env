@@ -57,6 +57,16 @@ def split_extras(filename: str) -> tuple[str, set]:
     return filename, extras
 
 
+def _render_pip_str(
+    req: Requirement,
+    editable: bool = False,
+) -> str:
+    pip_str = str(req) if not req.url else f"{req.name}@ {req.url}"
+    if editable:
+        pip_str = f'-e "{pip_str}"'
+    return pip_str
+
+
 def add_requirement(
     req: Requirement | str,
     requirements: dict[str, Requirement],
@@ -78,7 +88,7 @@ def add_requirement(
                     UserWarning,
                     stacklevel=1,
                 )
-                requirements[req.name].url = req.url
+            requirements[req.name].url = req.url
     elif mode == "replace":
         requirements[req.name] = req
     else:
@@ -127,12 +137,16 @@ def combine_requirements(
 @dataclass
 class Environment:
     filename: str | Path
+    """conda channels to include"""
     channels: list[str] = field(default_factory=lambda: ["conda-forge"])
+    """set of extra options to include"""
     extras: set[str] | list[str] = field(default_factory=set)
-    pip_packages: set[str] = field(
-        default_factory=set
-    )  # names of packages to install via pip
+    """names of packages to install via pip"""
+    pip_packages: set[str] = field(default_factory=set)
+    """additional requirements to add"""
     extra_requirements: InitVar[list[str]] = None
+    """names of packages to install in pip editable mode"""
+    editable: set[str] = field(default_factory=set)
     requirements: dict[str, Requirement] = field(default_factory=dict, init=False)
     build_system: dict[str, Requirement] = field(default_factory=dict, init=False)
 
@@ -141,6 +155,7 @@ class Environment:
         self.extras = set(self.extras)
         self.channels = list(dict.fromkeys(self.channels))
         self.pip_packages = set(self.pip_packages)
+        self.editable = set(self.editable)
 
         if self.filename:
             self._read_source()
@@ -301,7 +316,10 @@ class Environment:
                 ]
                 conda_reqs[req_key].extras = {}  # cannot handle extras in conda
 
-        deps = [str(r) for r in conda_reqs.values()]
+        deps = [copy.copy(r) for r in conda_reqs.values()]  # work on copies
+        for dep in deps:
+            dep.marker = None  # conda doesn't support markers
+        deps = [str(r) for r in deps]
         deps.sort(key=str.lower)
         if _python:
             deps = [str(_python)] + deps
@@ -325,7 +343,7 @@ class Environment:
         ]
 
         # string formatting
-        pip = [str(r) if not r.url else f"{r.name}@ {r.url}" for r in pip]
+        pip = [_render_pip_str(r, editable=r.name in self.editable) for r in pip]
         pip.sort(key=str.lower)
 
         return deps, pip
