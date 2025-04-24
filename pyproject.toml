@@ -1,11 +1,12 @@
 [build-system]
 build-backend = "setuptools.build_meta"
 requires = [
-  "setuptools>=64",
-  "setuptools-scm[toml]>=6.2",
+  "setuptools>=77",
+  "setuptools-scm[toml]>=8",
 ]
 
 [project]
+license = "BSD-3-Clause"
 name = "pydeps2env"
 description = "A python helper to generate conda environment files from project dependencies."
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -13,7 +14,6 @@ keywords = [
   "conda",
   "pyproject",
 ]
-license = { file = "LICENSE" }
 authors = [
   { name = "Çağtay Fabry", email = "cagtay.fabry@bam.de" },
 ]
@@ -21,7 +21,6 @@ requires-python = ">=3.9"
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: BSD License",
   "Natural Language :: English",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
