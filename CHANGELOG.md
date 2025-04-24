@@ -6,6 +6,7 @@
 
 - fixed pip markers in conda packages and add test case [#80]
 - fixed url not set for existing requirements [#80]
+- determine version at runtime [#80]
 
 ## v1.4.0
 

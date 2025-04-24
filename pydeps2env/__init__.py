@@ -17,7 +17,7 @@ __all__ = [
 from importlib.metadata import PackageNotFoundError, version
 
 try:
-    __version__ = version("weldx_widgets")
+    __version__ = version("pydeps2env")
 except PackageNotFoundError:
     # package is not installed
     pass
