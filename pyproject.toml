@@ -6,7 +6,6 @@ requires = [
 ]
 
 [project]
-license = "BSD-3-Clause"
 name = "pydeps2env"
 description = "A python helper to generate conda environment files from project dependencies."
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -14,6 +13,7 @@ keywords = [
   "conda",
   "pyproject",
 ]
+license = "BSD-3-Clause"
 authors = [
   { name = "Çağtay Fabry", email = "cagtay.fabry@bam.de" },
 ]
