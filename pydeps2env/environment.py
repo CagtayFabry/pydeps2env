@@ -78,7 +78,7 @@ def add_requirement(
                     UserWarning,
                     stacklevel=1,
                 )
-                requirements[req.name].url = req.url
+            requirements[req.name].url = req.url
     elif mode == "replace":
         requirements[req.name] = req
     else:
@@ -301,7 +301,10 @@ class Environment:
                 ]
                 conda_reqs[req_key].extras = {}  # cannot handle extras in conda
 
-        deps = [str(r) for r in conda_reqs.values()]
+        deps = [copy.copy(r) for r in conda_reqs.values()]  # work on copies
+        for dep in deps:
+            dep.marker = None  # conda doesn't support markers
+        deps = [str(r) for r in deps]
         deps.sort(key=str.lower)
         if _python:
             deps = [str(_python)] + deps

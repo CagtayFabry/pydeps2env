@@ -50,6 +50,8 @@ def create_environment_file(
         remove = set()
     if additional_requirements is None:
         additional_requirements = []
+    if pip is None:
+        pip = []
     pip = set(pip)
 
     env = create_environment(

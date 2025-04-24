@@ -1,5 +1,12 @@
 # pydeps2env
 
+## v1.4.1
+
+### fixed
+
+- fixed pip markers in conda packages [#80]
+- fixed url not set for existing requirements [#80]
+
 ## v1.4.0
 
 ### added
