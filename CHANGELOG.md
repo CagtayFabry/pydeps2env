@@ -2,6 +2,10 @@
 
 ## v1.4.1
 
+### added
+
+- added experimental `editable` option [#80]
+
 ### fixed
 
 - fixed pip markers in conda packages and add test case [#80]

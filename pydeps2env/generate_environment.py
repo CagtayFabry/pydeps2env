@@ -17,6 +17,7 @@ def create_environment_file(
     channels: list[str] = None,
     extras: list[str] = None,
     pip: set[str] = None,
+    editable: set[str] = None,
     additional_requirements: list[str] = None,
     remove: set[str] = None,
     include_build_system: str = "omit",
@@ -36,6 +37,8 @@ def create_environment_file(
         Extras specification to apply to all sources.
     pip
         List of dependencies to install via pip.
+    editable
+        List of names of packages to install in pip editable mode
     additional_requirements
         Additional requirements to include in the environment.
     remove
@@ -53,6 +56,8 @@ def create_environment_file(
     if pip is None:
         pip = []
     pip = set(pip)
+    if editable is None:
+        editable = {}
 
     env = create_environment(
         sources=sources,
@@ -60,6 +65,7 @@ def create_environment_file(
         channels=channels,
         extras=extras,
         pip=pip,
+        editable=editable,
     )
 
     _include = include_build_system == "include"
@@ -87,6 +93,7 @@ def create_environment(
     extras: list[str] = None,
     pip: set[str] = None,
     additional_requirements: list[str] = None,
+    editable: set[str] = None,
 ):
     """Create an environment instance from multiple source files and additional requirements.
 
@@ -102,6 +109,8 @@ def create_environment(
         List of dependencies to install via pip.
     additional_requirements
         Additional requirements to include in the environment.
+    editable
+        List of names of packages to install in pip editable mode
 
     Returns
     -------
@@ -116,8 +125,16 @@ def create_environment(
         pip = []
     if additional_requirements is None:
         additional_requirements = []
+    if editable is None:
+        editable = {}
 
-    env = Environment(sources[0], pip_packages=pip, extras=extras, channels=channels)
+    env = Environment(
+        sources[0],
+        pip_packages=pip,
+        extras=extras,
+        channels=channels,
+        editable=editable,
+    )
     for source in sources[1:]:
         env.combine(
             Environment(source, pip_packages=pip, extras=extras, channels=channels)
