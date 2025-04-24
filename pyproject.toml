@@ -13,7 +13,7 @@ keywords = [
   "conda",
   "pyproject",
 ]
-license = { file = "LICENSE", name = "BSD License" }
+license = { file = "LICENSE" }
 authors = [
   { name = "Çağtay Fabry", email = "cagtay.fabry@bam.de" },
 ]
@@ -33,8 +33,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 dynamic = [
-  # see: https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#dynamic-metadata
-  "version", # version gets derived from git by setuptools_scm.
+  "version",
 ]
 dependencies = [
   "packaging",
@@ -57,7 +56,7 @@ find = { exclude = [
 ] }
 
 [tool.setuptools_scm]
-write_to = "pydeps2env/_version.py"
+# enable setuptools-scm versioning
 
 [tool.pytest.ini_options]
 addopts = "--tb=short --color=yes -rsw --cov=pydeps2env"

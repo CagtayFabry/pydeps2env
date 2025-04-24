@@ -4,7 +4,7 @@
 
 ### fixed
 
-- fixed pip markers in conda packages [#80]
+- fixed pip markers in conda packages and add test case [#80]
 - fixed url not set for existing requirements [#80]
 
 ## v1.4.0
