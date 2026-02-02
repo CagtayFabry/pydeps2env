@@ -25,7 +25,7 @@ dependencies = [
 optional-dependencies.doc = [
   "sphinx",
 ]
-optional-dependencies.pip_only = [
+optional-dependencies.pip-only = [
   "bidict",
 ]
 optional-dependencies.test = [
