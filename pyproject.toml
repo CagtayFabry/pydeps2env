@@ -49,17 +49,18 @@ urls.bug_tracker = "https://github.com/CagtayFabry/pydeps2env/-/issues"
 urls.repository = "https://github.com/CagtayFabry/pydeps2env"
 scripts.pydeps2env = "pydeps2env.generate_environment:main"
 
-[tool.setuptools.packages]
-find = { exclude = [
+[tool.setuptools]
+packages.find = { exclude = [
   "test",
   "resources",
 ] }
 
 [tool.setuptools_scm]
+
+[tool.pytest]
 # enable setuptools-scm versioning
 
-[tool.pytest.ini_options]
-addopts = "--tb=short --color=yes -rsw --cov=pydeps2env"
-testpaths = [
+ini_options.addopts = "--tb=short --color=yes -rsw --cov=pydeps2env"
+ini_options.testpaths = [
   "test",
 ]
