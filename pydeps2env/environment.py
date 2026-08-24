@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-import copy
-
-from dataclasses import dataclass, field, InitVar
-from packaging.requirements import Requirement
-from pathlib import Path
-from collections import defaultdict
 import configparser
+import copy
 import sys
-import yaml
-from io import StringIO, BytesIO
+from collections import defaultdict
+from dataclasses import InitVar, dataclass, field
+from io import BytesIO, StringIO
+from pathlib import Path
 from warnings import warn
+
+import yaml
+from packaging.requirements import Requirement
 
 if sys.version_info < (3, 11):
     import tomli as tomllib
@@ -21,10 +21,9 @@ else:
 def get_mapping():
     """Downloads the mapping conda->pypi names from Parselmouth and returns the reverse mapping."""
     import json
-    import urllib.request as request
     from importlib import resources
-
-    from urllib.error import ContentTooShortError, URLError, HTTPError
+    from urllib import request
+    from urllib.error import ContentTooShortError, HTTPError, URLError
 
     try:
         fn, response = request.urlretrieve(
@@ -309,7 +308,7 @@ class Environment:
             and r.name not in remove
         }
 
-        for req_key in conda_reqs.keys():
+        for req_key in conda_reqs:
             if conda_reqs[req_key].name in pypi_to_conda_mapping.keys():
                 conda_reqs[req_key].name = pypi_to_conda_mapping[
                     conda_reqs[req_key].name
@@ -330,7 +329,7 @@ class Environment:
             if (r.name in _pip_packages or r.url) and r.name not in remove
         }
 
-        for req_key in pip_reqs.keys():
+        for req_key in pip_reqs:
             if req_key in _pip_packages:  # no need to convert
                 continue
             if pip_reqs[req_key].name in pypi_to_conda_mapping.keys():
@@ -367,7 +366,7 @@ class Environment:
         _python = pip_reqs.pop("python", None)
 
         for req_key in pip_reqs.keys():
-            if pip_reqs[req_key].name in conda_to_pypi_mapping.keys():
+            if pip_reqs[req_key].name in conda_to_pypi_mapping:
                 pip_reqs[req_key].name = conda_to_pypi_mapping[pip_reqs[req_key].name]
 
         deps = [

@@ -58,8 +58,8 @@ packages.find = { exclude = [
 [tool.setuptools_scm]
 
 [tool.pytest]
-# enable setuptools-scm versioning
-ini_options.addopts = "--tb=short --color=yes -rsw --cov=pydeps2env"
 ini_options.testpaths = [
   "test",
 ]
+# enable setuptools-scm versioning
+ini_options.addopts = "--tb=short --color=yes -rsw --cov=pydeps2env"

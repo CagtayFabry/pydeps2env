@@ -1,4 +1,5 @@
 import pytest
+
 from pydeps2env import Environment, create_environment, create_from_definition
 
 _inputs = [
