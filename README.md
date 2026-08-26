@@ -1,3 +1,6 @@
+> [!WARNING]
+> This repository is no longer maintained.
+
 # pydeps2env
 
 An easy way to create conda environment files from you python project dependencies.  
